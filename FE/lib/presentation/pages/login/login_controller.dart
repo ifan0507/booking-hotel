@@ -8,8 +8,9 @@ class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  final LoginService _loginService = new LoginService();
+  final LoginService _loginService = LoginService();
   var isFormValid = false.obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
@@ -41,13 +42,22 @@ class LoginController extends GetxController {
   }
 
   void login() async {
-    final response = await _loginService.login(email, password);
+    isLoading.value = true;
+    try {
+      final response = await _loginService.login(email, password);
 
-    if (response == true) {
-      Get.snackbar("Berhasil", "Login seccessful");
-      Get.offAllNamed(Routes.HOME);
-    } else {
-      Get.snackbar("Gagal", "gagal login",
+      if (response == null) {
+        isLoading.value = false;
+        Get.snackbar("Berhasil", "Login seccessfully");
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        isLoading.value = false;
+        Get.snackbar("Gagal", '${response}',
+            backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar("Gagal", '${e}',
           backgroundColor: Colors.red, colorText: Colors.white);
     }
   }

@@ -2,12 +2,17 @@ import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/core/route/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
+
+  await Future.wait([
+    GetStorage.init(),
+  ]);
+
+  final box = GetStorage();
+  final token = box.read("token");
 
   runApp(MyApp(initialRoute: token == null ? Routes.LOGIN : Routes.HOME));
 }

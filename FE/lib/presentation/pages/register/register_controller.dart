@@ -1,23 +1,17 @@
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/data/models/user.dart';
 import 'package:fe/data/services/register_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-class RegisterController {
+class RegisterController extends GetxController {
   final RegisterService _registerService = RegisterService();
 
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  void clearAll() {
-    firstNameController.clear();
-    lastNameController.clear();
-    emailController.clear();
-    passwordController.clear();
-  }
 
   bool isFirstNameValid() => firstNameController.text.trim().isNotEmpty;
   bool isLastNameValid() => lastNameController.text.trim().isNotEmpty;
@@ -29,7 +23,34 @@ class RegisterController {
   String get email => emailController.text.trim();
   String get password => passwordController.text;
 
-  void dispose() {
+  var isFormValid = false.obs;
+  var isLoading = false.obs;
+
+  @override
+  void onInit() {
+    firstNameController.addListener(validateForm);
+    lastNameController.addListener(validateForm);
+    emailController.addListener(validateForm);
+    passwordController.addListener(validateForm);
+    super.onInit();
+  }
+
+  void clearAll() {
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    passwordController.clear();
+  }
+
+  void validateForm() {
+    isFormValid.value = isFirstNameValid() &&
+        isLastNameValid() &&
+        isEmailValid() &&
+        isPasswordValid();
+  }
+
+  @override
+  void onClose() {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
@@ -37,23 +58,22 @@ class RegisterController {
   }
 
   void register() async {
-    // isLoading.value = true;
-
     final user = User(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
         email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        role: '1');
+        password: passwordController.text.trim());
 
+    isLoading.value = true;
     final success = await _registerService.register(user);
-    // isLoading.value = false;
-
     if (success == null) {
-      Get.snackbar("Berhasil", "Akun berhasil dibuat");
+      isLoading.value = false;
+      Get.snackbar("Success", "Register successfully");
       Get.offAllNamed(Routes.LOGIN);
     } else {
-      Get.snackbar("Gagal", "Pendaftaran gagal");
+      isLoading.value = false;
+      Get.snackbar("Error", ' ${success}',
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 }

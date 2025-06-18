@@ -1,4 +1,4 @@
-import 'package:fe/data/models/romm.dart';
+import 'package:fe/data/models/room.dart';
 
 class Booking {
   final int? id;
@@ -10,7 +10,7 @@ class Booking {
   final int? children;
   final int? total_guest;
   final String? confirmation_Code;
-  final Romm? romm;
+  final Room? room;
 
   Booking(
       {this.id,
@@ -22,7 +22,7 @@ class Booking {
       this.children,
       this.confirmation_Code,
       this.total_guest,
-      this.romm});
+      this.room});
 
   factory Booking.fromJson(Map<String, dynamic> jsonData) {
     return Booking(
@@ -35,7 +35,7 @@ class Booking {
         children: jsonData['children'] ?? "",
         confirmation_Code: jsonData['confirmation_Code'] ?? "",
         total_guest: jsonData['total_guest'] ?? "",
-        romm:
-            jsonData['room'] != null ? Romm.fromJson(jsonData['room']) : null);
+        room:
+            jsonData['room'] != null ? Room.fromJson(jsonData['room']) : null);
   }
 }

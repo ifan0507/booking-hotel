@@ -41,7 +41,7 @@ class LoginPage extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: screenHeight * 0.55,
+              height: screenHeight * 0.58,
               width: double.infinity,
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -74,7 +74,7 @@ class LoginPage extends StatelessWidget {
                             ),
                             child: const Icon(
                               Icons.person,
-                              size: 40,
+                              size: 45,
                               color: Color(0xFF1a237e),
                             ),
                           ),
@@ -111,7 +111,6 @@ class LoginPage extends StatelessWidget {
                               obscure: true),
                           SizedBox(height: 40),
 
-                          // Sign Up Button
                           Obx(() => AnimatedOpacity(
                                 opacity: _loginController.isFormValid.value
                                     ? 1.0
@@ -121,23 +120,34 @@ class LoginPage extends StatelessWidget {
                                   width: double.infinity,
                                   height: 55,
                                   child: ElevatedButton(
-                                    onPressed:
-                                        _loginController.isFormValid.value
-                                            ? () {
-                                                _loginController.login();
-                                              }
-                                            : null,
+                                    onPressed: _loginController
+                                                .isFormValid.value &&
+                                            !_loginController.isLoading.value
+                                        ? () {
+                                            _loginController.login();
+                                          }
+                                        : null,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Color(0xFF1a237e),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Sign In',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
+                                    child: _loginController.isLoading.value
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Sign In',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white),
+                                          ),
                                   ),
                                 ),
                               )),
