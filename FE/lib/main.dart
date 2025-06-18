@@ -9,7 +9,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('token');
 
-  runApp(MyApp(initialRoute: token == null ? Routes.LOGIN : Routes.HOME));
+  runApp(MyApp(initialRoute: token == null ? Routes.STARTED : Routes.HOME));
 }
 
 class MyApp extends StatelessWidget {

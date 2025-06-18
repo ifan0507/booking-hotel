@@ -40,11 +40,11 @@ class RegisterController {
     // isLoading.value = true;
 
     final user = User(
-        firstName: firstNameController.text.trim(),
-        lastName: lastNameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        role: '1');
+      firstName: firstNameController.text.trim(),
+      lastName: lastNameController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
 
     final success = await _registerService.register(user);
     // isLoading.value = false;
@@ -53,7 +53,7 @@ class RegisterController {
       Get.snackbar("Berhasil", "Akun berhasil dibuat");
       Get.offAllNamed(Routes.LOGIN);
     } else {
-      Get.snackbar("Gagal", "Pendaftaran gagal");
+      Get.snackbar("Gagal", "${success}");
     }
   }
 }
