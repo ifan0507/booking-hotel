@@ -2,7 +2,7 @@ import 'package:fe/data/models/room.dart';
 import 'package:fe/data/services/room_service.dart';
 import 'package:get/state_manager.dart';
 
-class HomeController extends GetxController {
+class DashboardController extends GetxController {
   final RoomService _roomService = RoomService();
 
   var rooms = <Room>[].obs;
@@ -24,6 +24,7 @@ class HomeController extends GetxController {
       List<Room> roomList = await _roomService.getAllRoom();
       rooms.value = roomList;
     } catch (e) {
+      isLoading.value = false;
       errorMessage.value = 'Failed to load rooms: $e';
       print('Error loading rooms: $e');
     } finally {

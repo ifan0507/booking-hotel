@@ -32,7 +32,7 @@ public class UserService implements IUserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         System.out.println(user.getPassword());
-        Role userRole = roleRepository.findByName("ROLE_USER").get();
+        Role userRole = roleRepository.findByName("ROLE_ADMIN").get();
         user.setRoles(Collections.singletonList(userRole));
         return userRepository.save(user);
     }
