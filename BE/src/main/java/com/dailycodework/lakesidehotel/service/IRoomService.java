@@ -1,6 +1,8 @@
 package com.dailycodework.lakesidehotel.service;
 
 import com.dailycodework.lakesidehotel.model.Room;
+import com.dailycodework.lakesidehotel.request.RoomRequest;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,7 +17,7 @@ import java.util.Optional;
  */
 
 public interface IRoomService {
-    Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SQLException, IOException;
+    Room addNewRoom(RoomRequest roomRequest) throws SQLException, IOException;
 
     List<String> getAllRoomTypes();
 

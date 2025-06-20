@@ -14,7 +14,6 @@ class DashboardPage extends StatelessWidget {
           child: !_homeController.isLoading.value
               ? Column(
                   children: [
-                    // Header Section
                     Container(
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(

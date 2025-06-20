@@ -4,10 +4,14 @@ import com.dailycodework.lakesidehotel.exception.PhotoRetrievalException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
+import com.dailycodework.lakesidehotel.repository.RoomRepository;
+import com.dailycodework.lakesidehotel.request.RoomRequest;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
 import com.dailycodework.lakesidehotel.service.BookingService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,8 +30,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author Simpson Alfred
@@ -44,17 +46,27 @@ public class RoomController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoomResponse> addNewRoom(
             @RequestParam("photo") MultipartFile photo,
-            @RequestParam("roomType") String roomType,
-            @RequestParam("roomPrice") BigDecimal roomPrice) throws SQLException, IOException {
-        Room savedRoom = roomService.addNewRoom(photo, roomType, roomPrice);
-        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomType(),
-                savedRoom.getRoomPrice());
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/add/new-room")
-    public String test(@RequestParam String param) {
-        return "bisa";
+            @Valid @ModelAttribute RoomRequest roomRequest) throws SQLException, IOException {
+        try {
+            Room savedRoom = roomService.addNewRoom(roomRequest);
+            RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomCode(),
+                    savedRoom.getRoomType(),
+                    savedRoom.getRoomDescription(),
+                    savedRoom.getRoomPrice(), savedRoom.getRoomName(), savedRoom.getAminiti());
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Atau gunakan custom error response
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @GetMapping("/room/types")

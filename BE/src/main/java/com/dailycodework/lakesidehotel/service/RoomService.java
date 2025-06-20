@@ -2,9 +2,15 @@ package com.dailycodework.lakesidehotel.service;
 
 import com.dailycodework.lakesidehotel.exception.InternalServerException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
+import com.dailycodework.lakesidehotel.model.Aminiti;
 import com.dailycodework.lakesidehotel.model.Room;
+import com.dailycodework.lakesidehotel.repository.AminitiRepository;
 import com.dailycodework.lakesidehotel.repository.RoomRepository;
+import com.dailycodework.lakesidehotel.request.RoomRequest;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,17 +31,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoomService implements IRoomService {
     private final RoomRepository roomRepository;
+    private final AminitiRepository aminitiRepository;
+
     @Override
-    public Room addNewRoom(MultipartFile file, String roomType, BigDecimal roomPrice) throws SQLException, IOException {
+    public Room addNewRoom(RoomRequest roomRequest) throws SQLException, IOException {
         Room room = new Room();
-        room.setRoomType(roomType);
-        room.setRoomPrice(roomPrice);
-        if (!file.isEmpty()){
-            byte[] photoBytes = file.getBytes();
+        room.setRoomCode(roomRequest.getRoomCode());
+        room.setRoomType(roomRequest.getRoomType());
+        room.setRoomName(roomRequest.getRoomName());
+        room.setRoomDescription(roomRequest.getRoomDescription());
+        room.setRoomPrice(roomRequest.getRoomPrice());
+        if (!roomRequest.getPhoto().isEmpty()) {
+            byte[] photoBytes = roomRequest.getPhoto().getBytes();
             Blob photoBlob = new SerialBlob(photoBytes);
             room.setPhoto(photoBlob);
         }
-        return roomRepository.save(room);
+
+        Aminiti aminiti = new Aminiti(null, roomRequest.isAc(), roomRequest.isTv(), roomRequest.isMiniBar(),
+                roomRequest.isBalcony(), roomRequest.isJacuzzi(), roomRequest.isKitchen(), room);
+
+        roomRepository.save(room);
+        aminitiRepository.save(aminiti);
+
+        return room;
     }
 
     @Override
@@ -51,11 +69,11 @@ public class RoomService implements IRoomService {
     @Override
     public byte[] getRoomPhotoByRoomId(Long roomId) throws SQLException {
         Optional<Room> theRoom = roomRepository.findById(roomId);
-        if(theRoom.isEmpty()){
+        if (theRoom.isEmpty()) {
             throw new ResourceNotFoundException("Sorry, Room not found!");
         }
         Blob photoBlob = theRoom.get().getPhoto();
-        if(photoBlob != null){
+        if (photoBlob != null) {
             return photoBlob.getBytes(1, (int) photoBlob.length());
         }
         return null;
@@ -64,7 +82,7 @@ public class RoomService implements IRoomService {
     @Override
     public void deleteRoom(Long roomId) {
         Optional<Room> theRoom = roomRepository.findById(roomId);
-        if(theRoom.isPresent()){
+        if (theRoom.isPresent()) {
             roomRepository.deleteById(roomId);
         }
     }
@@ -72,8 +90,10 @@ public class RoomService implements IRoomService {
     @Override
     public Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes) {
         Room room = roomRepository.findById(roomId).get();
-        if (roomType != null) room.setRoomType(roomType);
-        if (roomPrice != null) room.setRoomPrice(roomPrice);
+        if (roomType != null)
+            room.setRoomType(roomType);
+        if (roomPrice != null)
+            room.setRoomPrice(roomPrice);
         if (photoBytes != null && photoBytes.length > 0) {
             try {
                 room.setPhoto(new SerialBlob(photoBytes));
@@ -81,7 +101,7 @@ public class RoomService implements IRoomService {
                 throw new InternalServerException("Fail updating room");
             }
         }
-       return roomRepository.save(room);
+        return roomRepository.save(room);
     }
 
     @Override

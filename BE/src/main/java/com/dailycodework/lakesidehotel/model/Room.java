@@ -36,6 +36,9 @@ public class Room {
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookedRoom> bookings;
 
+    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Aminiti aminiti;
+
     public Room() {
         this.bookings = new ArrayList<>();
     }
