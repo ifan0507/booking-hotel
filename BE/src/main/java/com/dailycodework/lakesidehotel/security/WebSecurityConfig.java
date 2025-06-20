@@ -59,28 +59,13 @@ public class WebSecurityConfig {
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/rooms/**", "/bookings/**")
-                        .permitAll().requestMatchers("/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/**", "/rooms/**")
+                        .permitAll().requestMatchers("/roles/**", "/bookings/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationTokenFilter(),
                 UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    // http.csrf().disable()
-    // .authorizeHttpRequests()
-    // .requestMatchers("/login", "/auth/register-user").permitAll()
-    // .anyRequest().authenticated()
-    // .and()
-    // .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-    // http.addFilterBefore(authenticationTokenFilter(),
-    // UsernamePasswordAuthenticationFilter.class);
-
-    // return http.build();
-    // }
 
 }

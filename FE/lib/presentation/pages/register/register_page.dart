@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RegisterPage extends StatelessWidget {
-  final RegisterController _registerController = RegisterController();
+  final RegisterController _registerController = Get.put(RegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -118,28 +118,46 @@ class RegisterPage extends StatelessWidget {
                               obscure: true),
                           SizedBox(height: 40),
 
-                          // Sign Up Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 55,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _registerController.register();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF1a237e),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                          Obx(() => AnimatedOpacity(
+                                opacity: _registerController.isFormValid.value
+                                    ? 1.0
+                                    : 0.5,
+                                duration: Duration(milliseconds: 300),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 55,
+                                  child: ElevatedButton(
+                                    onPressed: _registerController
+                                                .isFormValid.value &&
+                                            !_registerController.isLoading.value
+                                        ? () {
+                                            _registerController.register();
+                                          }
+                                        : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF1a237e),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                    child: _registerController.isLoading.value
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Sign Up',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white),
+                                          ),
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.white),
-                              ),
-                            ),
-                          ),
-
+                              )),
                           const SizedBox(height: 20),
 
                           // Already have account

@@ -5,10 +5,10 @@ import 'package:fe/data/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class RegisterService {
+class RegisterService extends Api {
   final _storage = const FlutterSecureStorage();
   Future<String?> register(User user) async {
-    final url = Uri.parse('${Api.baseUrl}/auth/register-user');
+    final url = Uri.parse('$baseUrl/auth/register-user');
 
     try {
       final response = await http.post(url,
@@ -20,7 +20,7 @@ class RegisterService {
         await _storage.write(key: 'token', value: token);
         return null;
       } else {
-        return jsonDecode(response.body)['message'] ?? 'Login gagal';
+        return jsonDecode(response.body)['message'] ?? 'Register gagal';
       }
     } catch (e) {
       return 'gagal terhubung keserver';

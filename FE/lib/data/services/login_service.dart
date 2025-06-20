@@ -5,24 +5,28 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginService {
-  Future<bool> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('${Api.baseUrl}/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
+class LoginService extends Api {
+  Future<String?> login(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['token'];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-      return true;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        return null;
+      } else {
+        return jsonDecode(response.body)['message'] ?? 'Login Gagal';
+      }
+    } catch (e) {
+      return "gagal terhubung keserver";
     }
-    print(response.statusCode);
-    return false;
   }
 
   Future<void> logout() async {
