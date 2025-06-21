@@ -7,8 +7,14 @@ class Room {
   final String? roomName;
   final String? roomDescription;
   final double? roomPrice;
-  final bool? isBoked;
+  final bool? isBooked;
   final String? photo;
+  final bool? ac;
+  final bool? tv;
+  final bool? miniBar;
+  final bool? jacuzzi;
+  final bool? balcony;
+  final bool? kitchen;
   final File? photoFile;
 
   Room({
@@ -18,8 +24,14 @@ class Room {
     this.roomDescription,
     this.roomPrice,
     this.roomType,
-    this.isBoked,
+    this.isBooked,
     this.photo,
+    this.ac,
+    this.tv,
+    this.miniBar,
+    this.balcony,
+    this.jacuzzi,
+    this.kitchen,
     this.photoFile,
   });
 
@@ -27,11 +39,17 @@ class Room {
     return {
       'id': id,
       'roomCode': roomCode,
-      'roomName': roomCode,
+      'roomName': roomName,
       'roomDescription': roomDescription,
-      'isBoked': isBoked,
+      'isBooked': isBooked,
       'roomPrice': roomPrice,
       'roomType': roomType,
+      'ac': ac,
+      'tv': tv,
+      'miniBar': miniBar,
+      'balcony': balcony,
+      'jacuzzi': jacuzzi,
+      'kitchen': kitchen,
       'photo': photo
     };
   }
@@ -44,7 +62,13 @@ class Room {
       roomDescription: jsonData['rommDescription'] ?? "",
       roomPrice: (jsonData['roomPrice'] ?? 0).toDouble(),
       roomType: jsonData['roomType'] ?? "",
-      isBoked: jsonData['isBoked'] ?? false,
+      isBooked: jsonData['isBooked'] ?? false,
+      ac: jsonData['ac'] ?? false,
+      tv: jsonData['tv'] ?? false,
+      miniBar: jsonData['miniBar'] ?? false,
+      balcony: jsonData['balcony'] ?? false,
+      jacuzzi: jsonData['jacuzzi'] ?? false,
+      kitchen: jsonData['kitchen'] ?? false,
       photo: jsonData['photo'] ?? "",
     );
   }

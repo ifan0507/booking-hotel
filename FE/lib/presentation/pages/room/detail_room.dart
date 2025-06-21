@@ -1,9 +1,16 @@
+import 'package:fe/presentation/pages/room/detail-room_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/presentation/pages/room/room_controller.dart';
+import 'package:fe/data/models/room.dart';
+import 'package:get/get.dart';
 
-class DetailRoomScreen extends StatelessWidget {
+class DetailRoomScreen extends StatefulWidget {
   const DetailRoomScreen({Key? key}) : super(key: key);
 
+  @override
+  State<DetailRoomScreen> createState() => _DetailRoomState();
+}
+
+class _DetailRoomState extends State<DetailRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

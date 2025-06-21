@@ -1,12 +1,7 @@
 package com.dailycodework.lakesidehotel.request;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
-
 import org.springframework.web.multipart.MultipartFile;
-
-import com.dailycodework.lakesidehotel.model.Aminiti;
-
 import jakarta.persistence.Lob;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +14,7 @@ public class RoomRequest {
     private String roomType;
     private String roomName;
     private BigDecimal roomPrice;
-    private boolean isBooked = false;
+    private boolean isBooked;
     @Lob
     private String roomDescription;
 

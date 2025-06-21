@@ -52,7 +52,10 @@ public class RoomController {
             RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomCode(),
                     savedRoom.getRoomType(),
                     savedRoom.getRoomDescription(),
-                    savedRoom.getRoomPrice(), savedRoom.getRoomName(), savedRoom.getAminiti());
+                    savedRoom.getRoomPrice(), savedRoom.isBooked(), savedRoom.getRoomName(), savedRoom.isAc(),
+                    savedRoom.isTv(),
+                    savedRoom.isMiniBar(),
+                    savedRoom.isJacuzzi(), savedRoom.isBalcony(), savedRoom.isKitchen());
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,13 +103,13 @@ public class RoomController {
     @PutMapping("/update/{roomId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId,
-            @RequestParam(required = false) String roomType,
-            @RequestParam(required = false) BigDecimal roomPrice,
-            @RequestParam(required = false) MultipartFile photo) throws SQLException, IOException {
+            @ModelAttribute RoomRequest roomRequest, MultipartFile photo) throws SQLException, IOException {
+
+        System.out.println("ROOMM BOOKEEEEEDDD..................................." + roomRequest.isBooked());
         byte[] photoBytes = photo != null && !photo.isEmpty() ? photo.getBytes()
                 : roomService.getRoomPhotoByRoomId(roomId);
         Blob photoBlob = photoBytes != null && photoBytes.length > 0 ? new SerialBlob(photoBytes) : null;
-        Room theRoom = roomService.updateRoom(roomId, roomType, roomPrice, photoBytes);
+        Room theRoom = roomService.updateRoom(roomId, roomRequest, photoBytes);
         theRoom.setPhoto(photoBlob);
         RoomResponse roomResponse = getRoomResponse(theRoom);
         return ResponseEntity.ok(roomResponse);
@@ -161,9 +164,10 @@ public class RoomController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        return new RoomResponse(room.getId(),
+        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(),
                 room.getRoomType(), room.getRoomPrice(),
-                room.isBooked(), photoBytes, bookingInfo);
+                room.isBooked(), room.isAc(), room.isTv(), room.isMiniBar(),
+                room.isJacuzzi(), room.isBalcony(), room.isKitchen(), photoBytes, bookingInfo);
     }
 
     private List<BookedRoom> getAllBookingsByRoomId(Long roomId) {

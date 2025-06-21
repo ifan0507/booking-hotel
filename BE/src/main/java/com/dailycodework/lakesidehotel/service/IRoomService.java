@@ -27,7 +27,7 @@ public interface IRoomService {
 
     void deleteRoom(Long roomId);
 
-    Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes);
+    Room updateRoom(Long roomId, RoomRequest roomRequest, byte[] photoBytes);
 
     Optional<Room> getRoomById(Long roomId);
 

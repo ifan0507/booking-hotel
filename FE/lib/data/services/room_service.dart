@@ -13,8 +13,11 @@ class RoomService extends Api {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
 
+        print('JSON Data: $jsonData');
+
         List<Room> rooms =
             jsonData.map((roomJson) => Room.fromJson(roomJson)).toList();
+
         return rooms;
       } else {
         throw Exception(
@@ -36,8 +39,8 @@ class RoomService extends Api {
       if (room.roomPrice != null) {
         request.fields['roomPrice'] = room.roomPrice.toString();
       }
-      if (room.isBoked != null) {
-        request.fields['isBoked'] = room.isBoked.toString();
+      if (room.isBooked != null) {
+        request.fields['isBooked'] = room.isBooked.toString();
       }
 
       if (room.photoFile != null && room.photoFile!.existsSync()) {
