@@ -1,7 +1,7 @@
 import 'package:get_storage/get_storage.dart';
 
 class Api {
-  String baseUrl = "http://162.120.186.69:8080";
+  String baseUrl = "http://192.168.1.3:8080";
 
   Map<String, String> getToken() {
     final box = GetStorage();

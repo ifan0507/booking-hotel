@@ -27,6 +27,12 @@ public class Room {
     private String roomName;
     private BigDecimal roomPrice;
     private boolean isBooked = false;
+    private boolean ac = false;
+    private boolean tv = false;
+    private boolean miniBar = false;
+    private boolean balcony = false;
+    private boolean jacuzzi = false;
+    private boolean kitchen = false;
     @Lob
     private String roomDescription;
 
@@ -35,9 +41,6 @@ public class Room {
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookedRoom> bookings;
-
-    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Aminiti aminiti;
 
     public Room() {
         this.bookings = new ArrayList<>();

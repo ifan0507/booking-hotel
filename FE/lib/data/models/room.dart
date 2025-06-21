@@ -9,6 +9,12 @@ class Room {
   final double? roomPrice;
   final bool? isBoked;
   final String? photo;
+  final bool? ac;
+  final bool? tv;
+  final bool? miniBar;
+  final bool? jacuzzi;
+  final bool? balcony;
+  final bool? kitchen;
   final File? photoFile;
 
   Room({
@@ -20,6 +26,12 @@ class Room {
     this.roomType,
     this.isBoked,
     this.photo,
+    this.ac,
+    this.tv,
+    this.miniBar,
+    this.balcony,
+    this.jacuzzi,
+    this.kitchen,
     this.photoFile,
   });
 
@@ -27,11 +39,17 @@ class Room {
     return {
       'id': id,
       'roomCode': roomCode,
-      'roomName': roomCode,
+      'roomName': roomName,
       'roomDescription': roomDescription,
       'isBoked': isBoked,
       'roomPrice': roomPrice,
       'roomType': roomType,
+      'ac': ac,
+      'tv': tv,
+      'miniBar': miniBar,
+      'balcony': balcony,
+      'jacuzzi': jacuzzi,
+      'kitchen': kitchen,
       'photo': photo
     };
   }
@@ -45,6 +63,12 @@ class Room {
       roomPrice: (jsonData['roomPrice'] ?? 0).toDouble(),
       roomType: jsonData['roomType'] ?? "",
       isBoked: jsonData['isBoked'] ?? false,
+      ac: jsonData['ac'] ?? false,
+      tv: jsonData['tv'] ?? false,
+      miniBar: jsonData['miniBar'] ?? false,
+      balcony: jsonData['balcony'] ?? false,
+      jacuzzi: jsonData['jacuzzi'] ?? false,
+      kitchen: jsonData['kitchen'] ?? false,
       photo: jsonData['photo'] ?? "",
     );
   }

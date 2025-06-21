@@ -52,7 +52,9 @@ public class RoomController {
             RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomCode(),
                     savedRoom.getRoomType(),
                     savedRoom.getRoomDescription(),
-                    savedRoom.getRoomPrice(), savedRoom.getRoomName(), savedRoom.getAminiti());
+                    savedRoom.getRoomPrice(), savedRoom.getRoomName(), savedRoom.isAc(), savedRoom.isTv(),
+                    savedRoom.isMiniBar(),
+                    savedRoom.isJacuzzi(), savedRoom.isBalcony(), savedRoom.isKitchen());
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,9 +163,10 @@ public class RoomController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        return new RoomResponse(room.getId(),
+        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(),
                 room.getRoomType(), room.getRoomPrice(),
-                room.isBooked(), photoBytes, bookingInfo);
+                room.isBooked(), room.isAc(), room.isTv(), room.isMiniBar(),
+                room.isJacuzzi(), room.isBalcony(), room.isKitchen(), photoBytes, bookingInfo);
     }
 
     private List<BookedRoom> getAllBookingsByRoomId(Long roomId) {

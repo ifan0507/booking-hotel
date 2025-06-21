@@ -2,9 +2,7 @@ package com.dailycodework.lakesidehotel.service;
 
 import com.dailycodework.lakesidehotel.exception.InternalServerException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
-import com.dailycodework.lakesidehotel.model.Aminiti;
 import com.dailycodework.lakesidehotel.model.Room;
-import com.dailycodework.lakesidehotel.repository.AminitiRepository;
 import com.dailycodework.lakesidehotel.repository.RoomRepository;
 import com.dailycodework.lakesidehotel.request.RoomRequest;
 
@@ -31,7 +29,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoomService implements IRoomService {
     private final RoomRepository roomRepository;
-    private final AminitiRepository aminitiRepository;
 
     @Override
     public Room addNewRoom(RoomRequest roomRequest) throws SQLException, IOException {
@@ -41,19 +38,19 @@ public class RoomService implements IRoomService {
         room.setRoomName(roomRequest.getRoomName());
         room.setRoomDescription(roomRequest.getRoomDescription());
         room.setRoomPrice(roomRequest.getRoomPrice());
+        room.setAc(roomRequest.isAc());
+        room.setTv(roomRequest.isTv());
+        room.setMiniBar(roomRequest.isMiniBar());
+        room.setBalcony(roomRequest.isBalcony());
+        room.setJacuzzi(roomRequest.isJacuzzi());
+        room.setKitchen(roomRequest.isKitchen());
         if (!roomRequest.getPhoto().isEmpty()) {
             byte[] photoBytes = roomRequest.getPhoto().getBytes();
             Blob photoBlob = new SerialBlob(photoBytes);
             room.setPhoto(photoBlob);
         }
 
-        Aminiti aminiti = new Aminiti(null, roomRequest.isAc(), roomRequest.isTv(), roomRequest.isMiniBar(),
-                roomRequest.isBalcony(), roomRequest.isJacuzzi(), roomRequest.isKitchen(), room);
-
-        roomRepository.save(room);
-        aminitiRepository.save(aminiti);
-
-        return room;
+        return roomRepository.save(room);
     }
 
     @Override
