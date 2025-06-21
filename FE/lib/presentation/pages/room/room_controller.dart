@@ -2,7 +2,7 @@ import 'package:fe/data/models/room.dart';
 import 'package:fe/data/services/room_service.dart';
 import 'package:get/get.dart';
 
-class DetailRoomController extends GetxController {
+class RoomController extends GetxController {
   final RoomService _roomService = RoomService();
 
   var rooms = <Room>[].obs;

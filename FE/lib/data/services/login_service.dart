@@ -25,6 +25,7 @@ class LoginService extends Api {
         return jsonDecode(response.body)['message'] ?? 'Login Gagal';
       }
     } catch (e) {
+      print("erorr yang ditangkap ${e}");
       return "gagal terhubung keserver";
     }
   }

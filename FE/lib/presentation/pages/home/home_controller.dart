@@ -22,16 +22,7 @@ class HomeController extends GetxController {
       errorMessage.value = '';
 
       List<Room> roomList = await _roomService.getAllRoom();
-
       rooms.value = roomList;
-
-      for (Room room in roomList) {
-        print('Room ID: ${room.id}');
-        print('Room Type: ${room.roomType}');
-        print('Room Price: ${room.roomPrice}');
-        print('Is Booked: ${room.isBoked}');
-        print('Has Photo: ${room.photo?.isNotEmpty ?? false}');
-      }
     } catch (e) {
       errorMessage.value = 'Failed to load rooms: $e';
       print('Error loading rooms: $e');
