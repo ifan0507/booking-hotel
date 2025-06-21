@@ -64,6 +64,8 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority).toList();
             return ResponseEntity.ok(new JwtResponse(
                     userDetails.getId(),
+                    userDetails.getFirstName(),
+                    userDetails.getLastName(),
                     userDetails.getEmail(),
                     jwt,
                     roles));

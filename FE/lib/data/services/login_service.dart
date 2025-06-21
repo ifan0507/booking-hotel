@@ -20,12 +20,83 @@ class LoginService extends Api {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+
+        String firstName = data['firstName'] ?? '';
+        String lastName = data['lastName'] ?? '';
+        String fullName = '$firstName $lastName'.trim();
+
+        await prefs.setString('user_name', fullName);
+        await prefs.setString('user_email', data['email'] ?? '');
+        await prefs.setString('user_id', data['id'].toString());
+
+        if (data['roles'] != null) {
+          List<String> roles = List<String>.from(data['roles']);
+          await prefs.setStringList('user_roles', roles);
+        }
+
         return null;
       } else {
         return jsonDecode(response.body)['message'] ?? 'Login Gagal';
       }
     } catch (e) {
       return "gagal terhubung keserver";
+    }
+  }
+
+  Future<bool> isLoggedIn() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token != null && token.isNotEmpty) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<String> getUserName() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userName = prefs.getString('user_name');
+      return userName ?? 'User';
+    } catch (e) {
+      return 'User';
+    }
+  }
+
+  Future<String> getUserDisplayText() async {
+    try {
+      bool loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        String userName = await getUserName();
+        return "Halo $userName";
+      } else {
+        return "Halo Guest";
+      }
+    } catch (e) {
+      return "Halo Guest";
+    }
+  }
+
+  Future<List<String>> getUserRoles() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final roles = prefs.getStringList('user_roles');
+      return roles ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<bool> isAdmin() async {
+    try {
+      final roles = await getUserRoles();
+      return roles.contains('ROLE_ADMIN');
+    } catch (e) {
+      return false;
     }
   }
 

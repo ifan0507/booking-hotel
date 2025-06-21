@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fe/data/models/room.dart';
 import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +79,7 @@ class _RoomPageState extends State<RoomPage> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Icon(
-                            Icons.notifications_outlined,
+                            Icons.add,
                             color: whiteColor,
                             size: 24,
                           ),
@@ -170,23 +172,144 @@ class _RoomPageState extends State<RoomPage> {
               ),
             ),
           ), // Room List
+
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: _roomController.rooms.length,
-              itemBuilder: (context, index) {
-                final room = _roomController.rooms[index];
-                final List<String> amenities = [
-                  (room.ac ?? true) ? 'AC' : '',
-                  (room.tv ?? true) ? 'TV' : '',
-                  (room.miniBar ?? true) ? 'Mini Bar' : '',
-                  (room.balcony ?? true) ? 'Balcony' : '',
-                  (room.jacuzzi ?? true) ? 'Jacuzzi' : '',
-                  (room.kitchen ?? true) ? 'Kitchen' : ''
-                ];
-                return _buildRoomCard(room, amenities);
-              },
-            ),
+            child: Obx(() {
+              // LOADING STATE
+              if (_roomController.isLoading.value) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text(
+                        'Loading rooms...',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (_roomController.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red[300],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Oops! Something went wrong',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _roomController.errorMessage.value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () => _roomController.loadRooms(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Try Again'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              // EMPTY STATE
+              if (_roomController.rooms.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.hotel_outlined,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No rooms available',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Check back later for available rooms',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () => _roomController.refreshRooms(),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // SUCCESS STATE
+              return RefreshIndicator(
+                onRefresh: () => _roomController.refreshRooms(),
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  itemCount: _roomController.rooms.length,
+                  itemBuilder: (context, index) {
+                    final room = _roomController.rooms[index];
+                    final List<String> amenities = [
+                      (room.ac ?? true) ? 'AC' : '',
+                      (room.tv ?? true) ? 'TV' : '',
+                      (room.miniBar ?? true) ? 'Mini Bar' : '',
+                      (room.balcony ?? true) ? 'Balcony' : '',
+                      (room.jacuzzi ?? true) ? 'Jacuzzi' : '',
+                      (room.kitchen ?? true) ? 'Kitchen' : ''
+                    ];
+                    return _buildRoomCard(room, amenities);
+                  },
+                ),
+              );
+            }),
           ),
         ],
       ),
@@ -215,23 +338,11 @@ class _RoomPageState extends State<RoomPage> {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                child: Container(
-                  height: 200,
-                  width: double.infinity,
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 50,
-                      color: Colors.grey,
-                    ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   ),
-                ),
-              ),
+                  child: _buildRoomImage(room)),
               Positioned(
                 top: 12,
                 right: 12,
@@ -239,11 +350,11 @@ class _RoomPageState extends State<RoomPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: (room.isBoked ?? true) ? Colors.green : Colors.red,
+                    color: (room.isBooked ?? false) ? Colors.red : Colors.green,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    (room.isBoked ?? true) ? 'Available' : 'Booked',
+                    room.isBooked ?? false ? 'Booked' : 'Available',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -293,8 +404,28 @@ class _RoomPageState extends State<RoomPage> {
                         ),
                       ),
                     ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 4),
+                        Text(
+                          'Code:',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          ' ${room.roomCode}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
                 // Row(
                 //   children: [
@@ -355,7 +486,7 @@ class _RoomPageState extends State<RoomPage> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: (room.isBoked ?? false) ? () {} : null,
+                      onPressed: (room.isBooked ?? false) ? null : () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: whiteColor,
@@ -369,7 +500,7 @@ class _RoomPageState extends State<RoomPage> {
                         elevation: 2,
                       ),
                       child: Text(
-                        (room.isBoked ?? false) ? 'Book Now' : 'Not Available',
+                        (room.isBooked ?? false) ? 'Not Available' : 'Book Now',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -382,6 +513,36 @@ class _RoomPageState extends State<RoomPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRoomImage(Room room) {
+    if (room.photo != null && room.photo!.isNotEmpty) {
+      try {
+        return Image.memory(
+          base64Decode(room.photo!),
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildPlaceholderImage();
+          },
+        );
+      } catch (e) {
+        return _buildPlaceholderImage();
+      }
+    }
+    return _buildPlaceholderImage();
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      width: double.infinity,
+      color: Colors.grey[300],
+      child: const Icon(
+        Icons.hotel,
+        size: 32,
+        color: Colors.grey,
       ),
     );
   }

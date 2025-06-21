@@ -85,12 +85,20 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes) {
+    public Room updateRoom(Long roomId, RoomRequest roomRequest, byte[] photoBytes) {
         Room room = roomRepository.findById(roomId).get();
-        if (roomType != null)
-            room.setRoomType(roomType);
-        if (roomPrice != null)
-            room.setRoomPrice(roomPrice);
+        room.setRoomCode(roomRequest.getRoomCode());
+        room.setRoomType(roomRequest.getRoomType());
+        room.setRoomName(roomRequest.getRoomName());
+        room.setRoomDescription(roomRequest.getRoomDescription());
+        room.setRoomPrice(roomRequest.getRoomPrice());
+        room.setBooked(roomRequest.isBooked());
+        room.setAc(roomRequest.isAc());
+        room.setTv(roomRequest.isTv());
+        room.setMiniBar(roomRequest.isMiniBar());
+        room.setBalcony(roomRequest.isBalcony());
+        room.setJacuzzi(roomRequest.isJacuzzi());
+        room.setKitchen(roomRequest.isKitchen());
         if (photoBytes != null && photoBytes.length > 0) {
             try {
                 room.setPhoto(new SerialBlob(photoBytes));

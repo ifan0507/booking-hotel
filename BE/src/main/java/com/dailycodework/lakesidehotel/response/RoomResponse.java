@@ -35,6 +35,7 @@ public class RoomResponse {
     private List<BookingResponse> bookings;
 
     public RoomResponse(Long id, String roomCode, String roomName, String roomType, BigDecimal roomPrice,
+            boolean isBooked,
             String roomDescripton, boolean ac, boolean tv, boolean miniBar, boolean balcony, boolean jacuzzi,
             boolean kitchen) {
         this.id = id;
@@ -43,6 +44,7 @@ public class RoomResponse {
         this.roomName = roomName;
         this.roomDescription = roomDescripton;
         this.roomPrice = roomPrice;
+        this.isBooked = isBooked;
         this.ac = ac;
         this.tv = tv;
         this.miniBar = miniBar;

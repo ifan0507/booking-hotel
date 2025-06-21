@@ -14,7 +14,7 @@ public class RoomRequest {
     private String roomType;
     private String roomName;
     private BigDecimal roomPrice;
-    private boolean isBooked = false;
+    private boolean isBooked;
     @Lob
     private String roomDescription;
 

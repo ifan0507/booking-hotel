@@ -1,4 +1,5 @@
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
+import 'package:fe/presentation/pages/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/room.dart';
@@ -9,280 +10,291 @@ import 'dart:convert';
 class DashboardPage extends StatelessWidget {
   final DashboardController _dashboardController =
       Get.put(DashboardController());
+
+  int getBookedRoomsCount() {
+    return _dashboardController.rooms
+        .where((room) => room.isBooked == true)
+        .length;
+  }
+
+  int getNoBookedRoomsCount() {
+    return _dashboardController.rooms
+        .where((room) => room.isBooked == false)
+        .length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: !_dashboardController.isLoading.value
-          ? Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF1a237e),
-                        Color(0xFF3949ab),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF1a237e).withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: Offset(0, 8),
-                      ),
-                    ],
+        backgroundColor: Colors.grey[50],
+        body: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1a237e),
+                    Color(0xFF3949ab),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF1a237e).withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: Offset(0, 8),
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Column(
+                ],
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Admin Dashboard',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              Obx(
+                                () => Text(
+                                  _dashboardController.userDisplayText.value,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    'Kelola hotel Anda dengan mudah',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.8),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                                child: Icon(
-                                  Icons.notifications_outlined,
-                                  color: Colors.white,
-                                  size: 24,
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                'Kelola hotel Anda dengan mudah',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
-                          // Stats Cards
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildStatCard(
-                                    'Total Kamar', '24', Icons.hotel),
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      // Stats Cards
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                                'Total Kamar',
+                                '${_dashboardController.rooms.length}',
+                                Icons.hotel),
+                          ),
+                          SizedBox(width: 15),
+                          Expanded(
+                            child: _buildStatCard('Terisi',
+                                '${getBookedRoomsCount()}', Icons.people),
+                          ),
+                          SizedBox(width: 15),
+                          Expanded(
+                            child: _buildStatCard(
+                                'Tersedia',
+                                '${getNoBookedRoomsCount()}',
+                                Icons.check_circle),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search room...',
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                    border: InputBorder.none,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Obx(() {
+                // LOADING STATE
+                if (_dashboardController.isLoading.value) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text(
+                          'Loading rooms...',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // ERROR STATE
+                if (_dashboardController.errorMessage.value.isNotEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.red[300],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Oops! Something went wrong',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _dashboardController.errorMessage.value,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () => _dashboardController.loadRooms(),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Try Again'),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
                               ),
-                              SizedBox(width: 15),
-                              Expanded(
-                                child: _buildStatCard(
-                                    'Terisi', '18', Icons.people),
-                              ),
-                              SizedBox(width: 15),
-                              Expanded(
-                                child: _buildStatCard(
-                                    'Tersedia', '6', Icons.check_circle),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: Offset(0, 2),
+                  );
+                }
+
+                // EMPTY STATE
+                if (_dashboardController.rooms.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.hotel_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No rooms available',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Check back later for available rooms',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () => _dashboardController.refreshRooms(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Refresh'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search room...',
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  );
+                }
+
+                // SUCCESS STATE
+                return RefreshIndicator(
+                  onRefresh: () => _dashboardController.refreshRooms(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GridView.builder(
+                      physics:
+                          const AlwaysScrollableScrollPhysics(), // Untuk pull-to-refresh
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 15,
+                        mainAxisSpacing: 15,
+                        childAspectRatio: 0.8,
                       ),
+                      itemCount: _dashboardController.rooms.length,
+                      itemBuilder: (context, index) {
+                        return _buildRoomCard(
+                            _dashboardController.rooms[index]);
+                      },
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Obx(() {
-                    // LOADING STATE
-                    if (_dashboardController.isLoading.value) {
-                      return const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text(
-                              'Loading rooms...',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    // ERROR STATE
-                    if (_dashboardController.errorMessage.value.isNotEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                size: 64,
-                                color: Colors.red[300],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Oops! Something went wrong',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _dashboardController.errorMessage.value,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 24),
-                              ElevatedButton.icon(
-                                onPressed: () =>
-                                    _dashboardController.loadRooms(),
-                                icon: const Icon(Icons.refresh),
-                                label: const Text('Try Again'),
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-
-                    // EMPTY STATE
-                    if (_dashboardController.rooms.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.hotel_outlined,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No rooms available',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Check back later for available rooms',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton.icon(
-                              onPressed: () =>
-                                  _dashboardController.refreshRooms(),
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Refresh'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    // SUCCESS STATE
-                    return RefreshIndicator(
-                      onRefresh: () => _dashboardController.refreshRooms(),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: GridView.builder(
-                          physics:
-                              const AlwaysScrollableScrollPhysics(), // Untuk pull-to-refresh
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 15,
-                            mainAxisSpacing: 15,
-                            childAspectRatio: 0.8,
-                          ),
-                          itemCount: _dashboardController.rooms.length,
-                          itemBuilder: (context, index) {
-                            return _buildRoomCard(
-                                _dashboardController.rooms[index]);
-                          },
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ],
-            )
-          : Center(
-              child: CircularProgressIndicator(),
+                );
+              }),
             ),
-    );
+          ],
+        ));
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
@@ -388,13 +400,13 @@ class DashboardPage extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: (room.isBoked ?? false)
+                          color: (room.isBooked ?? false)
                               ? Colors.red
                               : Colors.green,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          (room.isBoked ?? false) ? 'Booked' : 'Available',
+                          (room.isBooked ?? false) ? 'Booked' : 'Available',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,

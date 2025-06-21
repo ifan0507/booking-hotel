@@ -7,7 +7,7 @@ class Room {
   final String? roomName;
   final String? roomDescription;
   final double? roomPrice;
-  final bool? isBoked;
+  final bool? isBooked;
   final String? photo;
   final bool? ac;
   final bool? tv;
@@ -24,7 +24,7 @@ class Room {
     this.roomDescription,
     this.roomPrice,
     this.roomType,
-    this.isBoked,
+    this.isBooked,
     this.photo,
     this.ac,
     this.tv,
@@ -41,7 +41,7 @@ class Room {
       'roomCode': roomCode,
       'roomName': roomName,
       'roomDescription': roomDescription,
-      'isBoked': isBoked,
+      'isBooked': isBooked,
       'roomPrice': roomPrice,
       'roomType': roomType,
       'ac': ac,
@@ -62,7 +62,7 @@ class Room {
       roomDescription: jsonData['rommDescription'] ?? "",
       roomPrice: (jsonData['roomPrice'] ?? 0).toDouble(),
       roomType: jsonData['roomType'] ?? "",
-      isBoked: jsonData['isBoked'] ?? false,
+      isBooked: jsonData['isBooked'] ?? false,
       ac: jsonData['ac'] ?? false,
       tv: jsonData['tv'] ?? false,
       miniBar: jsonData['miniBar'] ?? false,

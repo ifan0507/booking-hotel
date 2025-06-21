@@ -23,24 +23,26 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class HotelUserDetails implements UserDetails {
     private Long id;
-    private  String email;
+    private String firstName;
+    private String lastName;
+    private String email;
     private String password;
     private Collection<GrantedAuthority> authorities;
 
-    public static HotelUserDetails buildUserDetails(User user){
+    public static HotelUserDetails buildUserDetails(User user) {
         List<GrantedAuthority> authorities = user.getRoles()
                 .stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
         return new HotelUserDetails(
                 user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities);
 
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

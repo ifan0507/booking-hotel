@@ -11,12 +11,27 @@ class LoginController extends GetxController {
   final LoginService _loginService = LoginService();
   var isFormValid = false.obs;
   var isLoading = false.obs;
+  var userDisplayText = "Loading...".obs;
 
   @override
   void onInit() {
+    super.onInit();
     emailController.addListener(validateForm);
     passwordController.addListener(validateForm);
-    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    emailController.removeListener(validateForm);
+    passwordController.removeListener(validateForm);
+
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
+
+  Future<bool> checkLoginStatus() async {
+    return await _loginService.isLoggedIn();
   }
 
   void clearAll() {
@@ -34,13 +49,6 @@ class LoginController extends GetxController {
   String get email => emailController.text.trim();
   String get password => passwordController.text.trim();
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
-
   void login() async {
     isLoading.value = true;
     try {
@@ -48,17 +56,28 @@ class LoginController extends GetxController {
 
       if (response == null) {
         isLoading.value = false;
-        Get.snackbar("Berhasil", "Login seccessfully");
+        clearAll();
+        Get.snackbar("Berhasil", "Login successfully");
         Get.offAllNamed(Routes.HOME);
       } else {
         isLoading.value = false;
-        Get.snackbar("Gagal", '${response}',
+        Get.snackbar("Gagal", '$response',
             backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Gagal", '${e}',
+      Get.snackbar("Gagal", '$e',
           backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+  void logout() async {
+    try {
+      await _loginService.logout();
+      userDisplayText.value = "Halo Guest";
+      Get.offAllNamed(Routes.LOGIN);
+    } catch (e) {
+      Get.snackbar("Error", "Gagal logout");
     }
   }
 }

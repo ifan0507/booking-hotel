@@ -1,8 +1,10 @@
 import 'package:fe/presentation/pages/booking/booking_page.dart';
+import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:fe/presentation/pages/room/room_page.dart';
 import 'package:fe/presentation/pages/setting/setting_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,12 +12,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final DashboardController dashboardController =
+      Get.put(DashboardController());
+
   int _selectedIndex = 0;
   late List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
+    dashboardController.loadRooms();
     _pages = [
       DashboardPage(),
       RoomPage(),
