@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/core/utils/api.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService extends Api {
   Future<String?> login(String email, String password) async {
@@ -17,37 +17,38 @@ class LoginService extends Api {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['token'];
+        print("[DEBUG] Token login: $token");
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
+        final box = GetStorage();
+        box.write('token', token);
 
         String firstName = data['firstName'] ?? '';
         String lastName = data['lastName'] ?? '';
         String fullName = '$firstName $lastName'.trim();
 
-        await prefs.setString('user_name', fullName);
-        await prefs.setString('user_email', data['email'] ?? '');
-        await prefs.setString('user_id', data['id'].toString());
+        box.write('user_name', fullName);
+        box.write('user_email', data['email'] ?? '');
+        box.write('user_id', data['id'].toString());
 
         if (data['roles'] != null) {
           List<String> roles = List<String>.from(data['roles']);
-          await prefs.setStringList('user_roles', roles);
+          box.write('user_roles', roles);
         }
 
-        return null;
+        return null; // login sukses
       } else {
         return jsonDecode(response.body)['message'] ?? 'Login Gagal';
       }
     } catch (e) {
-      print("erorr yang ditangkap ${e}");
-      return "gagal terhubung keserver";
+      print("[ERROR] Terjadi kesalahan saat login: $e");
+      return "Gagal terhubung ke server";
     }
   }
 
   Future<bool> isLoggedIn() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+      final box = GetStorage();
+      final token = box.read("token");
 
       if (token != null && token.isNotEmpty) {
         return true;
@@ -60,8 +61,8 @@ class LoginService extends Api {
 
   Future<String> getUserName() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final userName = prefs.getString('user_name');
+      final box = GetStorage();
+      final userName = box.read("user_name");
       return userName ?? 'User';
     } catch (e) {
       return 'User';
@@ -84,8 +85,8 @@ class LoginService extends Api {
 
   Future<List<String>> getUserRoles() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final roles = prefs.getStringList('user_roles');
+      final box = GetStorage();
+      final roles = box.read("user_roles");
       return roles ?? [];
     } catch (e) {
       return [];
@@ -102,8 +103,8 @@ class LoginService extends Api {
   }
 
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
+    final box = GetStorage();
+    box.erase();
     Get.offAllNamed(Routes.LOGIN);
   }
 }

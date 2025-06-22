@@ -1,9 +1,13 @@
 import 'package:fe/data/models/room.dart';
 import 'package:fe/data/services/room_service.dart';
+import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RoomController extends GetxController {
   final RoomService _roomService = RoomService();
+  final DashboardController _dashboardController =
+      Get.put(DashboardController());
 
   var rooms = <Room>[].obs;
 
@@ -31,7 +35,38 @@ class RoomController extends GetxController {
     }
   }
 
+  String generateRoomCode() {
+    int maxNumber = 0;
+
+    for (var room in rooms) {
+      final code = room.roomCode;
+      final number =
+          int.tryParse(code.toString().replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+
+      if (number > maxNumber) {
+        maxNumber = number;
+      }
+    }
+
+    final nextNumber = maxNumber + 1;
+    return 'R${nextNumber.toString().padLeft(3, '0')}';
+  }
+
   Future<void> refreshRooms() async {
     await loadRooms();
+  }
+
+  void deleteRoom(int id) async {
+    final response = await _roomService.deleteRoom(id);
+
+    if (response == null) {
+      Get.snackbar("Success", "Delete room successfully",
+          backgroundColor: Colors.green, colorText: Colors.white);
+      await loadRooms();
+      await _dashboardController.loadRooms();
+    } else {
+      Get.snackbar("Error", ' $response',
+          backgroundColor: Colors.red, colorText: Colors.white);
+    }
   }
 }

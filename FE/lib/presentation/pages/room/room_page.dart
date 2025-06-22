@@ -28,6 +28,12 @@ class _RoomPageState extends State<RoomPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _roomController.loadRooms();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -345,25 +351,74 @@ class _RoomPageState extends State<RoomPage> {
                   ),
                   child: _buildRoomImage(room)),
               Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: (room.isBooked ?? false) ? Colors.red : Colors.green,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    room.isBooked ?? false ? 'Booked' : 'Available',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                  top: 5,
+                  right: 5,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      canvasColor: Colors.white, // Ubah background popup
                     ),
-                  ),
-                ),
-              ),
+                    child: PopupMenuButton<String>(
+                      onSelected: (String value) {
+                        if (value == 'edit') {
+                        } else if (value == 'delete') {}
+                      },
+                      icon: Icon(Icons.more_vert, color: Colors.white),
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, color: primaryColor),
+                              SizedBox(width: 10),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              SizedBox(width: 10),
+                              Text('Delete'),
+                            ],
+                          ),
+                          onTap: () {
+                            Future.delayed(Duration.zero, () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Confirm Deletion'),
+                                  content: Text(
+                                      'Are you sure you want to delete this room?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        if (room.id != null) {
+                                          _roomController.deleteRoom(room.id!);
+                                        }
+                                      },
+                                      child: Text('Delete'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
               Positioned(
                 top: 12,
                 left: 12,
@@ -397,7 +452,7 @@ class _RoomPageState extends State<RoomPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        room.roomName ?? 'Uknown Name',
+                        room.roomName ?? 'Unknown Name',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -405,62 +460,80 @@ class _RoomPageState extends State<RoomPage> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        const SizedBox(width: 4),
-                        Text(
-                          'Code:',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: (room.isBooked ?? false)
+                            ? Colors.red
+                            : Colors.green,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        room.isBooked ?? false ? 'Booked' : 'Available',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                        Text(
-                          ' ${room.roomCode}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-                // Row(
-                //   children: [
-                //     _buildInfoChip(Icons.people, '${room['guests']} guests'),
-                //     const SizedBox(width: 12),
-                //     // _buildInfoChip(Icons.straighten, room['size']),
-                //   ],
-                // ),
-                const SizedBox(height: 12),
-                // Amenities
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: (amenities)
-                      .where((ameniti) => ameniti.isNotEmpty)
-                      .map((ameniti) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              ameniti,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: primaryColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ))
-                      .toList(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: (amenities)
+                              .where((ameniti) => ameniti.isNotEmpty)
+                              .map((ameniti) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: primaryColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      ameniti,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                        // Row(
+                        //   children: [
+                        //     const SizedBox(width: 4),
+                        //     Text(
+                        //       'Code:',
+                        //       style: TextStyle(
+                        //         fontSize: 12,
+                        //         color: Colors.grey[600],
+                        //       ),
+                        //     ),
+                        //     Text(
+                        //       ' ${room.roomCode}',
+                        //       style: TextStyle(
+                        //         fontSize: 12,
+                        //         color: Colors.grey[600],
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      ],
+                    )
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -470,7 +543,7 @@ class _RoomPageState extends State<RoomPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Rp ${room.roomPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                          'Rp ${_formatPrice(room.roomPrice ?? 0)}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -579,5 +652,12 @@ class _RoomPageState extends State<RoomPage> {
         ],
       ),
     );
+  }
+
+  String _formatPrice(double price) {
+    return price.toStringAsFixed(0).replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 }

@@ -57,7 +57,8 @@ class LoginController extends GetxController {
       if (response == null) {
         isLoading.value = false;
         clearAll();
-        Get.snackbar("Berhasil", "Login successfully");
+        Get.snackbar("Berhasil", "Login successfully",
+            backgroundColor: Colors.green, colorText: Colors.white);
         Get.offAllNamed(Routes.HOME);
       } else {
         isLoading.value = false;

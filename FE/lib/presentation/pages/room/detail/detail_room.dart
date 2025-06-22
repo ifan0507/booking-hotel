@@ -1,7 +1,4 @@
-import 'package:fe/presentation/pages/room/detail-room_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/data/models/room.dart';
-import 'package:get/get.dart';
 
 class DetailRoomScreen extends StatefulWidget {
   const DetailRoomScreen({Key? key}) : super(key: key);
