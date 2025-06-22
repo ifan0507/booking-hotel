@@ -10,6 +10,7 @@
 .history
 .svn/
 .swiftpm/
+.android/
 migrate_working_dir/
 
 # IntelliJ related
@@ -32,6 +33,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/android/
 
 # Symbolication related
 app.*.symbols
