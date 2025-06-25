@@ -1,17 +1,20 @@
 import 'dart:io';
 
-import 'package:fe/presentation/pages/room/add/add_room_controller.dart';
+import 'package:fe/presentation/pages/room/edit/edit_room_controlller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddRoom extends StatefulWidget {
+class EditRoom extends StatefulWidget {
+  const EditRoom({super.key});
+
   @override
-  _AddRoomState createState() => _AddRoomState();
+  State<EditRoom> createState() => _EditRoomState();
 }
 
-class _AddRoomState extends State<AddRoom> {
-  final AddRoomController _addRoomController = Get.put(AddRoomController());
+class _EditRoomState extends State<EditRoom> {
+  final EditRoomControlller _editRoomControlller =
+      Get.put(EditRoomControlller());
   final _formKey = GlobalKey<FormState>();
 
   final List<String> roomType = ['Deluxe', 'Standard', 'Suite', 'Presidential'];
@@ -21,6 +24,7 @@ class _AddRoomState extends State<AddRoom> {
   @override
   void initState() {
     super.initState();
+    selectedRoomType = _editRoomControlller.roomTypeController.text;
   }
 
   @override
@@ -29,7 +33,7 @@ class _AddRoomState extends State<AddRoom> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        height: _addRoomController.isFullScreen.value
+        height: _editRoomControlller.isFullScreen.value
             ? MediaQuery.of(context).size.height
             : MediaQuery.of(context).size.height * 0.8,
         child: Container(
@@ -37,9 +41,9 @@ class _AddRoomState extends State<AddRoom> {
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(
-                  _addRoomController.isFullScreen.value ? 0 : 25),
+                  _editRoomControlller.isFullScreen.value ? 0 : 25),
               topRight: Radius.circular(
-                  _addRoomController.isFullScreen.value ? 0 : 25),
+                  _editRoomControlller.isFullScreen.value ? 0 : 25),
             ),
           ),
           child: Column(
@@ -51,9 +55,9 @@ class _AddRoomState extends State<AddRoom> {
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(
-                        _addRoomController.isFullScreen.value ? 0 : 25),
+                        _editRoomControlller.isFullScreen.value ? 0 : 25),
                     topRight: Radius.circular(
-                        _addRoomController.isFullScreen.value ? 0 : 25),
+                        _editRoomControlller.isFullScreen.value ? 0 : 25),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -65,7 +69,7 @@ class _AddRoomState extends State<AddRoom> {
                 ),
                 child: Row(
                   children: [
-                    if (!_addRoomController.isFullScreen.value)
+                    if (!_editRoomControlller.isFullScreen.value)
                       Container(
                         width: 40,
                         height: 4,
@@ -76,7 +80,7 @@ class _AddRoomState extends State<AddRoom> {
                       ),
                     Spacer(),
                     Text(
-                      'Add new room',
+                      'Update room',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -89,12 +93,12 @@ class _AddRoomState extends State<AddRoom> {
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _addRoomController.isFullScreen.value =
-                                  !_addRoomController.isFullScreen.value;
+                              _editRoomControlller.isFullScreen.value =
+                                  !_editRoomControlller.isFullScreen.value;
                             });
                           },
                           icon: Icon(
-                            _addRoomController.isFullScreen.value
+                            _editRoomControlller.isFullScreen.value
                                 ? Icons.fullscreen_exit
                                 : Icons.fullscreen,
                             color: Color(0xFF1a237e),
@@ -102,7 +106,7 @@ class _AddRoomState extends State<AddRoom> {
                         ),
                         IconButton(
                           onPressed: () {
-                            _addRoomController.resetForm();
+                            _editRoomControlller.resetForm();
                             Navigator.pop(context);
                           },
                           icon: Icon(Icons.close, color: Colors.grey[600]),
@@ -131,7 +135,7 @@ class _AddRoomState extends State<AddRoom> {
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(color: Colors.grey[300]!),
                           ),
-                          child: _addRoomController.photoFile == null
+                          child: _editRoomControlller.photoFile == null
                               ? InkWell(
                                   onTap: () async {
                                     final picker = ImagePicker();
@@ -140,7 +144,7 @@ class _AddRoomState extends State<AddRoom> {
 
                                     if (pickedFile != null) {
                                       setState(() {
-                                        _addRoomController.photoFile =
+                                        _editRoomControlller.photoFile =
                                             File(pickedFile.path);
                                       });
                                     } else {
@@ -158,7 +162,7 @@ class _AddRoomState extends State<AddRoom> {
                                       Icon(Icons.add_photo_alternate_outlined,
                                           size: 50, color: Colors.grey[400]),
                                       SizedBox(height: 10),
-                                      Text('Add room picture',
+                                      Text('Update room picture',
                                           style: TextStyle(
                                               color: Colors.grey[600])),
                                     ],
@@ -169,7 +173,7 @@ class _AddRoomState extends State<AddRoom> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
                                       child: Image.file(
-                                        _addRoomController.photoFile!,
+                                        _editRoomControlller.photoFile!,
                                         width: double.infinity,
                                         height: double.infinity,
                                         fit: BoxFit.cover,
@@ -180,7 +184,7 @@ class _AddRoomState extends State<AddRoom> {
                                       right: 10,
                                       child: GestureDetector(
                                         onTap: () => setState(() =>
-                                            _addRoomController.photoFile =
+                                            _editRoomControlller.photoFile =
                                                 null),
                                         child: Container(
                                           padding: EdgeInsets.all(5),
@@ -214,7 +218,8 @@ class _AddRoomState extends State<AddRoom> {
                             SizedBox(height: 8),
                             TextFormField(
                               readOnly: true,
-                              controller: _addRoomController.roomCodeController,
+                              controller:
+                                  _editRoomControlller.roomCodeController,
                               decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.qr_code,
                                     color: Color(0xFF1a237e)),
@@ -329,7 +334,7 @@ class _AddRoomState extends State<AddRoom> {
                                                           selectedRoomType =
                                                               value;
                                                         });
-                                                        _addRoomController
+                                                        _editRoomControlller
                                                             .roomTypeController
                                                             .text = value;
                                                         Navigator.pop(context);
@@ -380,21 +385,23 @@ class _AddRoomState extends State<AddRoom> {
                                         Row(
                                           children: [
                                             Icon(
-                                              _getRoomIcon(
-                                                  selectedRoomType ?? ''),
+                                              _getRoomIcon(selectedRoomType),
                                               color: Colors.blue.shade900,
                                               size: 20,
                                             ),
                                             const SizedBox(width: 12),
                                             Text(
-                                              selectedRoomType ??
-                                                  'Select room type',
+                                              selectedRoomType?.isEmpty ?? true
+                                                  ? 'Select room type'
+                                                  : selectedRoomType!,
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400,
-                                                color: selectedRoomType == null
-                                                    ? Colors.grey
-                                                    : Colors.black87,
+                                                color:
+                                                    selectedRoomType?.isEmpty ??
+                                                            true
+                                                        ? Colors.grey
+                                                        : Colors.black87,
                                               ),
                                             ),
                                           ],
@@ -412,7 +419,7 @@ class _AddRoomState extends State<AddRoom> {
 
                         // Room Name
                         _buildTextField(
-                          controller: _addRoomController.roomNameController,
+                          controller: _editRoomControlller.roomNameController,
                           label: 'Room Name',
                           hint: 'Contoh: Kamar Deluxe Ocean View',
                           icon: Icons.hotel,
@@ -423,7 +430,7 @@ class _AddRoomState extends State<AddRoom> {
                         // Room Description
                         _buildTextField(
                           controller:
-                              _addRoomController.roomDescriptionController,
+                              _editRoomControlller.roomDescriptionController,
                           label: 'Room Description',
                           hint: 'Deskripsi lengkap kamar...',
                           icon: Icons.description,
@@ -434,7 +441,7 @@ class _AddRoomState extends State<AddRoom> {
 
                         // Room Price
                         _buildTextField(
-                          controller: _addRoomController.roomPriceController,
+                          controller: _editRoomControlller.roomPriceController,
                           label: 'Room Price',
                           hint: 'Contoh: 500000',
                           icon: Icons.attach_money,
@@ -457,89 +464,82 @@ class _AddRoomState extends State<AddRoom> {
 
                         // Facilities switches
                         _buildFacilitySwitch(
-                            'AC', Icons.ac_unit, _addRoomController.ac.value,
+                            'AC', Icons.ac_unit, _editRoomControlller.ac.value,
                             (value) {
-                          setState(() => _addRoomController.ac.value = value);
+                          setState(() => _editRoomControlller.ac.value = value);
                         }),
 
                         _buildFacilitySwitch(
-                            'TV', Icons.tv, _addRoomController.tv.value,
+                            'TV', Icons.tv, _editRoomControlller.tv.value,
                             (value) {
-                          setState(() => _addRoomController.tv.value = value);
+                          setState(() => _editRoomControlller.tv.value = value);
                         }),
 
                         _buildFacilitySwitch('Mini Bar', Icons.local_bar,
-                            _addRoomController.miniBar.value, (value) {
+                            _editRoomControlller.miniBar.value, (value) {
                           setState(
-                              () => _addRoomController.miniBar.value = value);
+                              () => _editRoomControlller.miniBar.value = value);
                         }),
 
                         _buildFacilitySwitch('Jacuzzi', Icons.bathtub,
-                            _addRoomController.jacuzzi.value, (value) {
+                            _editRoomControlller.jacuzzi.value, (value) {
                           setState(
-                              () => _addRoomController.jacuzzi.value = value);
+                              () => _editRoomControlller.jacuzzi.value = value);
                         }),
 
                         _buildFacilitySwitch('Balcony', Icons.balcony,
-                            _addRoomController.balcony.value, (value) {
+                            _editRoomControlller.balcony.value, (value) {
                           setState(
-                              () => _addRoomController.balcony.value = value);
+                              () => _editRoomControlller.balcony.value = value);
                         }),
 
                         _buildFacilitySwitch('Kitchen', Icons.kitchen,
-                            _addRoomController.kitchen.value, (value) {
+                            _editRoomControlller.kitchen.value, (value) {
                           setState(
-                              () => _addRoomController.kitchen.value = value);
+                              () => _editRoomControlller.kitchen.value = value);
                         }),
 
                         SizedBox(height: 40),
 
                         // Save Button
-                        Obx(() => AnimatedOpacity(
-                              opacity: _addRoomController.isFormValid.value
-                                  ? 1.0
-                                  : 0.5,
-                              duration: Duration(milliseconds: 300),
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 55,
-                                child: ElevatedButton(
-                                  onPressed: _addRoomController
-                                              .isFormValid.value &&
-                                          !_addRoomController.isLoading.value
-                                      ? () {
-                                          _addRoomController.saveRoom(context);
-                                        }
-                                      : null,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF1a237e),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 3,
-                                  ),
-                                  child: _addRoomController.isLoading.value
-                                      ? const SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color:
-                                                Color.fromARGB(255, 8, 8, 158),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Save Room',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                        ),
+                        Obx(
+                          () => SizedBox(
+                            width: double.infinity,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: !_editRoomControlller.isLoading.value
+                                  ? () {
+                                      _editRoomControlller.saveRoom(context);
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF1a237e),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
+                                elevation: 3,
                               ),
-                            )),
+                              child: _editRoomControlller.isLoading.value
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color.fromARGB(255, 8, 8, 158),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Update Room',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                            ),
+                          ),
+                        ),
                         SizedBox(height: 20),
                       ],
                     ),

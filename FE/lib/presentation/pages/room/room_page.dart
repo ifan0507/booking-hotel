@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/data/models/room.dart';
+import 'package:fe/presentation/pages/room/edit/edit_room.dart';
+import 'package:fe/presentation/pages/room/edit/edit_room_controlller.dart';
 import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,6 +28,17 @@ class _RoomPageState extends State<RoomPage> {
     'Suite',
     'Presidential'
   ];
+
+  void _showEditRoomModal(Room room) {
+    final controller = Get.put(EditRoomControlller());
+    controller.initControllers(room);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EditRoom(),
+    );
+  }
 
   @override
   void initState() {
@@ -374,6 +387,9 @@ class _RoomPageState extends State<RoomPage> {
                               Text('Edit'),
                             ],
                           ),
+                          onTap: () {
+                            _showEditRoomModal(room);
+                          },
                         ),
                         PopupMenuItem<String>(
                           value: 'delete',
@@ -405,7 +421,9 @@ class _RoomPageState extends State<RoomPage> {
                                           _roomController.deleteRoom(room.id!);
                                         }
                                       },
-                                      child: Text('Delete'),
+                                      child: Text('Delete',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red,
                                       ),

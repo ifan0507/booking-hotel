@@ -164,8 +164,8 @@ public class RoomController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(),
-                room.getRoomType(), room.getRoomPrice(),
+        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomType(), room.getRoomName(),
+                room.getRoomDescription(), room.getRoomPrice(),
                 room.isBooked(), room.isAc(), room.isTv(), room.isMiniBar(),
                 room.isJacuzzi(), room.isBalcony(), room.isKitchen(), photoBytes, bookingInfo);
     }

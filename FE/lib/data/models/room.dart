@@ -59,7 +59,7 @@ class Room {
       id: jsonData['id'] ?? 0,
       roomCode: jsonData['roomCode'] ?? "",
       roomName: jsonData['roomName'] ?? "",
-      roomDescription: jsonData['rommDescription'] ?? "",
+      roomDescription: jsonData['roomDescription'] ?? "",
       roomPrice: (jsonData['roomPrice'] ?? 0).toDouble(),
       roomType: jsonData['roomType'] ?? "",
       isBooked: jsonData['isBooked'] ?? false,
