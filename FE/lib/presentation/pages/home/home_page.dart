@@ -6,6 +6,8 @@ import 'package:fe/presentation/pages/setting/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -151,6 +153,8 @@ class _AddRoomModalState extends State<AddRoomModal> {
   bool _kitchen = false;
   File? _photoFile;
 
+  final ImagePicker _picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -255,11 +259,7 @@ class _AddRoomModalState extends State<AddRoomModal> {
                               ? InkWell(
                                   onTap: () {
                                     // Implement photo picker
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Implementasi photo picker di sini')),
-                                    );
+                                    _pickImage();
                                   },
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -435,6 +435,75 @@ class _AddRoomModalState extends State<AddRoomModal> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final permission = await Permission.photos.request();
+
+      if (!permission.isGranted) {
+        _showPermissionDialog('Galeri');
+        return;
+      }
+
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _photoFile = File(pickedFile.path);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Foto berhasil dipilih!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tidak ada foto yang dipilih'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memilih foto: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showPermissionDialog(String source) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Izin Diperlukan'),
+        content: Text(
+            'Aplikasi memerlukan izin untuk mengakses $source. Silakan berikan izin di pengaturan aplikasi.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+            child: Text('Pengaturan'),
+          ),
+        ],
       ),
     );
   }

@@ -36,13 +36,13 @@ public class RoomResponse {
 
     public RoomResponse(Long id, String roomCode, String roomName, String roomType, BigDecimal roomPrice,
             boolean isBooked,
-            String roomDescripton, boolean ac, boolean tv, boolean miniBar, boolean balcony, boolean jacuzzi,
+            String roomDescription, boolean ac, boolean tv, boolean miniBar, boolean balcony, boolean jacuzzi,
             boolean kitchen) {
         this.id = id;
         this.roomCode = roomCode;
         this.roomType = roomType;
         this.roomName = roomName;
-        this.roomDescription = roomDescripton;
+        this.roomDescription = roomDescription;
         this.roomPrice = roomPrice;
         this.isBooked = isBooked;
         this.ac = ac;

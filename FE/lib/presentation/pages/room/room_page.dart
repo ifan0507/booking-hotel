@@ -490,7 +490,9 @@ class _RoomPageState extends State<RoomPage> {
                       onPressed: (room.isBooked ?? false)
                           ? null
                           : () {
-                              Get.toNamed(Routes.DETAILROOM);
+                              // Tambahkan ini
+
+                              Get.toNamed(Routes.DETAILROOM, arguments: room);
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,

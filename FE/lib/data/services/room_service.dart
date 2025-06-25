@@ -15,6 +15,7 @@ class RoomService extends Api {
 
         print('JSON Data: $jsonData');
 
+        print('[DEBUG] Raw JSON: $jsonData');
         List<Room> rooms =
             jsonData.map((roomJson) => Room.fromJson(roomJson)).toList();
 
