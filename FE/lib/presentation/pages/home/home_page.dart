@@ -1,14 +1,14 @@
 import 'package:fe/presentation/pages/booking/booking_page.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_page.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:fe/presentation/pages/room/add/add_room.dart';
 import 'package:fe/presentation/pages/room/add/add_room_controller.dart';
 import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:fe/presentation/pages/room/room_page.dart';
-import 'package:fe/presentation/pages/setting/setting_page.dart';
+import 'package:fe/presentation/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,8 +20,11 @@ class _HomePageState extends State<HomePage> {
       Get.put(DashboardController());
   final RoomController _roomController = Get.put(RoomController());
   final AddRoomController _addRoomController = Get.put(AddRoomController());
+  final HomeController _homeController = Get.put(HomeController());
 
-  int _selectedIndex = 0;
+  int _selectedPageIndex = 0;
+  int _navBarIndex = 0;
+
   late List<Widget> _pages;
 
   @override
@@ -31,7 +34,7 @@ class _HomePageState extends State<HomePage> {
       DashboardPage(),
       RoomPage(),
       BookingPage(),
-      SettingPage(),
+      ProfilePage(),
     ];
   }
 
@@ -50,7 +53,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: _pages[_selectedIndex],
+      body: _pages[_selectedPageIndex],
+
       // Bottom Navigation
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -73,16 +77,21 @@ class _HomePageState extends State<HomePage> {
             topRight: Radius.circular(25),
           ),
           child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
+            currentIndex: _navBarIndex,
             onTap: (index) {
-              if (index == 2) {
-                // Index 2 is the add button
+              int addRoomIndex = (_homeController.isLoggedIn.value &&
+                      _homeController.isAdmin.value)
+                  ? 2
+                  : -1;
+
+              if (index == addRoomIndex) {
                 _showAddRoomModal();
               } else {
-                // Adjust index for other pages since add button is not a page
-                int pageIndex = index > 2 ? index - 1 : index;
+                int pageIndex = index;
+                if (addRoomIndex != -1 && index > addRoomIndex) pageIndex--;
                 setState(() {
-                  _selectedIndex = pageIndex;
+                  _navBarIndex = index;
+                  _selectedPageIndex = pageIndex;
                 });
               }
             },
@@ -102,30 +111,32 @@ class _HomePageState extends State<HomePage> {
                 activeIcon: Icon(Icons.hotel),
                 label: 'Room',
               ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF1a237e),
-                    shape: BoxShape.circle,
+              if (_homeController.isLoggedIn.value &&
+                  _homeController.isAdmin.value)
+                BottomNavigationBarItem(
+                  icon: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1a237e),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  label: 'Add Room',
                 ),
-                label: 'Add Room',
-              ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.people_outline),
                 activeIcon: Icon(Icons.people),
                 label: 'Booking',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined),
-                activeIcon: Icon(Icons.settings),
-                label: 'Setting',
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Profile',
               ),
             ],
           ),

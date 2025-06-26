@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/data/models/room.dart';
+import 'package:fe/data/services/login_service.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room_controlller.dart';
 import 'package:fe/presentation/pages/room/room_controller.dart';
@@ -17,6 +19,7 @@ class RoomPage extends StatefulWidget {
 
 class _RoomPageState extends State<RoomPage> {
   final RoomController _roomController = Get.put(RoomController());
+  final HomeController _homeController = Get.put(HomeController());
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
 
@@ -92,18 +95,18 @@ class _RoomPageState extends State<RoomPage> {
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: whiteColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: whiteColor,
-                            size: 24,
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.all(12),
+                        //   decoration: BoxDecoration(
+                        //     color: whiteColor.withOpacity(0.2),
+                        //     borderRadius: BorderRadius.circular(15),
+                        //   ),
+                        //   child: Icon(
+                        //     Icons.add,
+                        //     color: whiteColor,
+                        //     size: 24,
+                        //   ),
+                        // ),
                       ],
                     ),
 
@@ -363,80 +366,83 @@ class _RoomPageState extends State<RoomPage> {
                     topRight: Radius.circular(16),
                   ),
                   child: _buildRoomImage(room)),
-              Positioned(
-                  top: 5,
-                  right: 5,
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      canvasColor: Colors.white, // Ubah background popup
-                    ),
-                    child: PopupMenuButton<String>(
-                      onSelected: (String value) {
-                        if (value == 'edit') {
-                        } else if (value == 'delete') {}
-                      },
-                      icon: Icon(Icons.more_vert, color: Colors.white),
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, color: primaryColor),
-                              SizedBox(width: 10),
-                              Text('Edit'),
-                            ],
+              if (_homeController.isLoggedIn.value &&
+                  _homeController.isAdmin.value)
+                Positioned(
+                    top: 5,
+                    right: 5,
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        canvasColor: Colors.white, // Ubah background popup
+                      ),
+                      child: PopupMenuButton<String>(
+                        onSelected: (String value) {
+                          if (value == 'edit') {
+                          } else if (value == 'delete') {}
+                        },
+                        icon: Icon(Icons.more_vert, color: Colors.white),
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, color: primaryColor),
+                                SizedBox(width: 10),
+                                Text('Edit'),
+                              ],
+                            ),
+                            onTap: () {
+                              _showEditRoomModal(room);
+                            },
                           ),
-                          onTap: () {
-                            _showEditRoomModal(room);
-                          },
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 10),
-                              Text('Delete'),
-                            ],
-                          ),
-                          onTap: () {
-                            Future.delayed(Duration.zero, () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Confirm Deletion'),
-                                  content: Text(
-                                      'Are you sure you want to delete this room?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        if (room.id != null) {
-                                          _roomController.deleteRoom(room.id!);
-                                        }
-                                      },
-                                      child: Text('Delete',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
+                          PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.red),
+                                SizedBox(width: 10),
+                                Text('Delete'),
+                              ],
+                            ),
+                            onTap: () {
+                              Future.delayed(Duration.zero, () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('Confirm Deletion'),
+                                    content: Text(
+                                        'Are you sure you want to delete this room?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: Text('Cancel'),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  )),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          if (room.id != null) {
+                                            _roomController
+                                                .deleteRoom(room.id!);
+                                          }
+                                        },
+                                        child: Text('Delete',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    )),
               Positioned(
                 top: 12,
                 left: 12,

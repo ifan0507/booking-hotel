@@ -151,7 +151,7 @@ class GetStartedScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             // Handle get started action
-                            Get.offAllNamed(Routes.LOGIN);
+                            Get.offAllNamed(Routes.HOME);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF1a237e),
