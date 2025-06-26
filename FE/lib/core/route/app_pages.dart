@@ -9,9 +9,9 @@ import '../../presentation/pages/started/get_started.dart';
 class AppPages {
   static final pages = [
     GetPage(
-      name: '/started',
-      page: () => GetStartedScreen(),
-    ),
+        name: '/started',
+        page: () => GetStartedScreen(),
+        transition: Transition.leftToRight),
     GetPage(
       name: '/login',
       page: () => LoginPage(),
@@ -21,9 +21,9 @@ class AppPages {
       page: () => RegisterPage(),
     ),
     GetPage(
-      name: '/home',
-      page: () => HomePage(),
-    ),
+        name: '/home',
+        page: () => HomePage(),
+        transition: Transition.leftToRight),
     GetPage(
       name: '/rooms',
       page: () => RoomPage(),

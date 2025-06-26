@@ -108,23 +108,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 5),
 
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Text(
-                        _homeController.isAdmin.value
-                            ? 'Admin'
-                            : _homeController.isUser.value
-                                ? 'User'
-                                : 'Guest',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                    Obx(
+                      () => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text(
+                          _homeController.isAdmin.value
+                              ? 'Admin'
+                              : _homeController.isUser.value
+                                  ? 'User'
+                                  : 'Guest',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -135,10 +137,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          Expanded(
+          Obx(() => Expanded(
               child: _homeController.isLoggedIn.value
                   ? _buildLoggedInProfile()
-                  : _buildGuestProfile())
+                  : _buildGuestProfile()))
         ],
       ),
     );

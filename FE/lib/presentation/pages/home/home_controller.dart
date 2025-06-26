@@ -8,6 +8,18 @@ class HomeController extends GetxController {
   final isAdmin = false.obs;
   final isUser = false.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    loadUserStatus();
+  }
+
+  void loadUserStatus() async {
+    isLoggedIn.value = await _loginService.isLoggedIn();
+    isAdmin.value = await _loginService.isAdmin();
+    isUser.value = await _loginService.isUser();
+  }
+
   Future<bool> checkLoginStatus() async {
     return isLoggedIn.value = await _loginService.isLoggedIn();
   }

@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _dashboardController.loadRooms();
+    // _dashboardController.loadRooms();
   }
 
   @override
@@ -390,7 +390,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     'Rp ${_formatPrice(room.roomPrice ?? 0)}',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.blue,
+                      color: Color(0xFF1a237e),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

@@ -1,5 +1,5 @@
-import 'package:fe/data/models/room.dart';
 import 'package:fe/data/services/room_service.dart';
+import 'package:fe/data/models/room.dart';
 import 'package:get/get.dart';
 
 class DetailRoomController extends GetxController {

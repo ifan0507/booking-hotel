@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fe/data/models/room.dart';
+import 'package:fe/presentation/pages/room/detail/detail-room_controller.dart';
+import 'package:get/get.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class DetailRoomScreen extends StatefulWidget {
   const DetailRoomScreen({Key? key}) : super(key: key);
@@ -8,6 +13,17 @@ class DetailRoomScreen extends StatefulWidget {
 }
 
 class _DetailRoomState extends State<DetailRoomScreen> {
+  final DetailRoomController _detailRoomController =
+      Get.put(DetailRoomController());
+
+  @override
+  void initState() {
+    super.initState();
+    print('Get.arguments = ${Get.arguments}'); // Debug print
+  }
+
+  bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -15,6 +31,20 @@ class _DetailRoomState extends State<DetailRoomScreen> {
     final isTablet = screenWidth > 600;
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+
+    final Room room = Get.arguments;
+
+    final description = room.roomDescription ?? '';
+    final wordCount = description.trim().split(RegExp(r'\s+')).length;
+
+    // Tampilkan deskripsi sebagian jika belum expanded
+    final shortDescription = _isExpanded || wordCount <= 100
+        ? description
+        : description.trim().split(' ').take(100).join(' ') + '...';
+
+    final formatCurrency =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final priceFormatted = formatCurrency.format(room.roomPrice ?? 0);
 
     return Scaffold(
       body: Stack(
@@ -69,46 +99,19 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                   ? screenHeight * 0.5
                                   : (isTablet ? 400 : screenHeight * 0.4),
                               width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: isTablet
-                                    ? const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        topRight: Radius.circular(16),
-                                      )
-                                    : null,
-                                image: const DecorationImage(
-                                  image: NetworkImage(
-                                    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            // Heart Icon - Responsive sizing
-                            Positioned(
-                              bottom: isTablet ? 24 : 16,
-                              right: isTablet ? 24 : 16,
-                              child: Container(
-                                width: isTablet ? 48 : 40,
-                                height: isTablet ? 48 : 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.circular(isTablet ? 24 : 20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: Colors.red,
-                                  size: isTablet ? 28 : 24,
-                                ),
-                              ),
+                              child: room.photo != null &&
+                                      room.photo!.isNotEmpty
+                                  ? Image.memory(
+                                      base64Decode(room.photo!),
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          Center(
+                                              child:
+                                                  Text('Gagal memuat gambar')),
+                                    )
+                                  : Center(child: Text("Tidak ada foto")),
                             ),
                           ],
                         ),
@@ -131,7 +134,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Coeurdes Alpes',
+                                          room.roomName ?? 'Detail Kamar',
                                           style: TextStyle(
                                             fontSize: isTablet ? 32 : 28,
                                             fontWeight: FontWeight.bold,
@@ -142,7 +145,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                         TextButton(
                                           onPressed: () {},
                                           child: Text(
-                                            'Show map',
+                                            room.roomType ?? '',
                                             style: TextStyle(
                                               fontSize: isTablet ? 18 : 16,
                                               color: const Color(0xFF1a237e),
@@ -160,7 +163,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            'Coeurdes Alpes',
+                                            room.roomName ?? 'Detail Kamar',
                                             style: TextStyle(
                                               fontSize: isTablet
                                                   ? 32
@@ -169,17 +172,6 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                                       : 28),
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black87,
-                                            ),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {},
-                                          child: Text(
-                                            'Show map',
-                                            style: TextStyle(
-                                              fontSize: isTablet ? 18 : 16,
-                                              color: const Color(0xFF1a237e),
-                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                         ),
@@ -211,7 +203,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
 
                               // Description - Responsive
                               Text(
-                                'Aspen is as close as one can get to a storybook alpine town in America. The choose-your-own-adventure possibilities—skiing, hiking, dining, shopping and ....',
+                                shortDescription,
                                 style: TextStyle(
                                   fontSize: isTablet
                                       ? 18
@@ -220,38 +212,42 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                   height: 1.5,
                                 ),
                               ),
-
                               SizedBox(height: isTablet ? 12 : 8),
-
-                              // Read More - Responsive
-                              TextButton(
-                                onPressed: () {},
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Read more',
-                                      style: TextStyle(
-                                        fontSize: isTablet ? 18 : 16,
-                                        color: const Color(0xFF1a237e),
-                                        fontWeight: FontWeight.w500,
+                              if (wordCount > 100)
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isExpanded = !_isExpanded;
+                                    });
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        _isExpanded ? 'Show less' : 'Read more',
+                                        style: TextStyle(
+                                          fontSize: isTablet ? 18 : 16,
+                                          color: const Color(0xFF1a237e),
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Icon(
-                                      Icons.keyboard_arrow_down,
-                                      color: const Color(0xFF1a237e),
-                                      size: isTablet ? 24 : 20,
-                                    ),
-                                  ],
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        _isExpanded
+                                            ? Icons.keyboard_arrow_up
+                                            : Icons.keyboard_arrow_down,
+                                        color: const Color(0xFF1a237e),
+                                        size: isTablet ? 24 : 20,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
 
                               SizedBox(height: isTablet ? 32 : 24),
 
@@ -269,9 +265,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
 
                               // Facilities Icons - Responsive Grid
                               _buildResponsiveFacilities(
-                                  context, isTablet, screenWidth),
+                                  context, isTablet, screenWidth, room),
 
-                              SizedBox(height: isTablet ? 48 : 37),
+                              SizedBox(height: isTablet ? 48 : 60),
                             ],
                           ),
                         ),
@@ -320,6 +316,26 @@ class _DetailRoomState extends State<DetailRoomScreen> {
             ),
           ),
 
+          Positioned(
+            top: MediaQuery.of(context).padding.top + (isTablet ? 24 : 20),
+            right: isTablet ? 24 : 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Color(0xFF1a237e),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                room.roomType ?? 'Uknown Type',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+
           // Fixed Bottom Section for Price and Book Now
           Positioned(
             bottom: 0,
@@ -361,16 +377,17 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Price: ',
+                              'Price per night',
                               style: TextStyle(
                                 fontSize: 16,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            const Text(
-                              '\$199',
+                            Text(
+                              priceFormatted,
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF4CAF50),
                               ),
@@ -421,21 +438,22 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Price',
+                              'Price per night',
                               style: TextStyle(
+                                fontWeight: FontWeight.bold,
                                 fontSize: isTablet ? 16 : 14,
                                 color: Colors.grey[600],
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '\$199',
+                              priceFormatted,
                               style: TextStyle(
                                 fontSize: isTablet
                                     ? 36
-                                    : (screenWidth < 350 ? 28 : 32),
+                                    : (screenWidth < 350 ? 28 : 24),
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF4CAF50),
+                                color: const Color(0xFF1a237e),
                               ),
                             ),
                           ],
@@ -485,15 +503,35 @@ class _DetailRoomState extends State<DetailRoomScreen> {
   }
 
   Widget _buildResponsiveFacilities(
-      BuildContext context, bool isTablet, double screenWidth) {
-    final facilities = [
-      {'icon': Icons.thermostat, 'label': '1 Heater'},
-      {'icon': Icons.restaurant, 'label': 'Dinner'},
-      {'icon': Icons.bathtub, 'label': '1 Tub'},
-      {'icon': Icons.pool, 'label': 'Pool'},
-    ];
+      BuildContext context, bool isTablet, double screenWidth, Room room) {
+    // Map boolean properti ke fasilitas
+    final List<Map<String, dynamic>> facilities = [];
 
-    // For very small screens, use 2x2 grid
+    if (room.ac == true) {
+      facilities.add({'icon': Icons.ac_unit, 'label': 'AC'});
+    }
+    if (room.tv == true) {
+      facilities.add({'icon': Icons.tv, 'label': 'TV'});
+    }
+    if (room.miniBar == true) {
+      facilities.add({'icon': Icons.local_bar, 'label': 'Mini Bar'});
+    }
+    if (room.jacuzzi == true) {
+      facilities.add({'icon': Icons.hot_tub, 'label': 'Jacuzzi'});
+    }
+    if (room.balcony == true) {
+      facilities.add({'icon': Icons.balcony, 'label': 'Balcony'});
+    }
+    if (room.kitchen == true) {
+      facilities.add({'icon': Icons.kitchen, 'label': 'Kitchen'});
+    }
+
+    // Jika tidak ada fasilitas, tampilkan teks
+    if (facilities.isEmpty) {
+      return const Text("No facilities available");
+    }
+
+    // Untuk layar kecil (grid)
     if (screenWidth < 350) {
       return GridView.builder(
         shrinkWrap: true,
@@ -515,7 +553,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
       );
     }
 
-    // Default row layout for larger screens
+    // Untuk layar sedang hingga besar (wrap)
     return Wrap(
       spacing: isTablet ? 16 : 12,
       runSpacing: 12,

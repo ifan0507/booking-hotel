@@ -76,31 +76,8 @@ class _HomePageState extends State<HomePage> {
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
           ),
-          child: BottomNavigationBar(
-            currentIndex: _navBarIndex,
-            onTap: (index) {
-              int addRoomIndex = (_homeController.isLoggedIn.value &&
-                      _homeController.isAdmin.value)
-                  ? 2
-                  : -1;
-
-              if (index == addRoomIndex) {
-                _showAddRoomModal();
-              } else {
-                int pageIndex = index;
-                if (addRoomIndex != -1 && index > addRoomIndex) pageIndex--;
-                setState(() {
-                  _navBarIndex = index;
-                  _selectedPageIndex = pageIndex;
-                });
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: Color(0xFF1a237e),
-            unselectedItemColor: Colors.grey[400],
-            elevation: 0,
-            items: [
+          child: Obx(() {
+            List<BottomNavigationBarItem> navItems = [
               BottomNavigationBarItem(
                 icon: Icon(Icons.dashboard_outlined),
                 activeIcon: Icon(Icons.dashboard),
@@ -111,8 +88,11 @@ class _HomePageState extends State<HomePage> {
                 activeIcon: Icon(Icons.hotel),
                 label: 'Room',
               ),
-              if (_homeController.isLoggedIn.value &&
-                  _homeController.isAdmin.value)
+            ];
+
+            if (_homeController.isLoggedIn.value &&
+                _homeController.isAdmin.value) {
+              navItems.add(
                 BottomNavigationBarItem(
                   icon: Container(
                     padding: EdgeInsets.all(8),
@@ -128,6 +108,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: 'Add Room',
                 ),
+              );
+            }
+
+            navItems.addAll([
               BottomNavigationBarItem(
                 icon: Icon(Icons.people_outline),
                 activeIcon: Icon(Icons.people),
@@ -138,8 +122,35 @@ class _HomePageState extends State<HomePage> {
                 activeIcon: Icon(Icons.person),
                 label: 'Profile',
               ),
-            ],
-          ),
+            ]);
+
+            return BottomNavigationBar(
+              currentIndex: _navBarIndex,
+              onTap: (index) {
+                int addRoomIndex = (_homeController.isLoggedIn.value &&
+                        _homeController.isAdmin.value)
+                    ? 2
+                    : -1;
+
+                if (index == addRoomIndex) {
+                  _showAddRoomModal();
+                } else {
+                  int pageIndex = index;
+                  if (addRoomIndex != -1 && index > addRoomIndex) pageIndex--;
+                  setState(() {
+                    _navBarIndex = index;
+                    _selectedPageIndex = pageIndex;
+                  });
+                }
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              selectedItemColor: Color(0xFF1a237e),
+              unselectedItemColor: Colors.grey[400],
+              elevation: 0,
+              items: navItems,
+            );
+          }),
         ),
       ),
     );
