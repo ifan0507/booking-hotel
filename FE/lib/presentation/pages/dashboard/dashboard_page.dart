@@ -1,5 +1,4 @@
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
-import 'package:fe/presentation/pages/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/room.dart';
@@ -7,7 +6,14 @@ import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'dart:convert';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
   final DashboardController _dashboardController =
       Get.put(DashboardController());
 
@@ -21,6 +27,12 @@ class DashboardPage extends StatelessWidget {
     return _dashboardController.rooms
         .where((room) => room.isBooked == false)
         .length;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dashboardController.loadRooms();
   }
 
   @override
@@ -100,28 +112,28 @@ class DashboardPage extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       // Stats Cards
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                                'Total Kamar',
-                                '${_dashboardController.rooms.length}',
-                                Icons.hotel),
-                          ),
-                          SizedBox(width: 15),
-                          Expanded(
-                            child: _buildStatCard('Terisi',
-                                '${getBookedRoomsCount()}', Icons.people),
-                          ),
-                          SizedBox(width: 15),
-                          Expanded(
-                            child: _buildStatCard(
-                                'Tersedia',
-                                '${getNoBookedRoomsCount()}',
-                                Icons.check_circle),
-                          ),
-                        ],
-                      ),
+                      Obx(() => Row(
+                            children: [
+                              Expanded(
+                                child: _buildStatCard(
+                                    'Total Kamar',
+                                    '${_dashboardController.rooms.length}',
+                                    Icons.hotel),
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: _buildStatCard('Terisi',
+                                    '${getBookedRoomsCount()}', Icons.people),
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: _buildStatCard(
+                                    'Tersedia',
+                                    '${getNoBookedRoomsCount()}',
+                                    Icons.check_circle),
+                              ),
+                            ],
+                          ))
                     ],
                   ),
                 ),
@@ -378,7 +390,7 @@ class DashboardPage extends StatelessWidget {
                     'Rp ${_formatPrice(room.roomPrice ?? 0)}',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.blue,
+                      color: Color(0xFF1a237e),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

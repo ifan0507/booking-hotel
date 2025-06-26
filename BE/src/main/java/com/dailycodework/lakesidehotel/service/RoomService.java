@@ -87,6 +87,10 @@ public class RoomService implements IRoomService {
     @Override
     public Room updateRoom(Long roomId, RoomRequest roomRequest, byte[] photoBytes) {
         Room room = roomRepository.findById(roomId).get();
+
+        if (room == null) {
+            throw new InternalServerException("Fail updating room");
+        }
         room.setRoomCode(roomRequest.getRoomCode());
         room.setRoomType(roomRequest.getRoomType());
         room.setRoomName(roomRequest.getRoomName());
@@ -106,6 +110,7 @@ public class RoomService implements IRoomService {
                 throw new InternalServerException("Fail updating room");
             }
         }
+
         return roomRepository.save(room);
     }
 

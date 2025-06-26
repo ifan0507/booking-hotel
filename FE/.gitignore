@@ -34,7 +34,10 @@ migrate_working_dir/
 .pub/
 /build/
 /android/
+<<<<<<< HEAD
 
+=======
+>>>>>>> e39c00a47203e6041fecc5c4bed0bb47a99ebc56
 # Symbolication related
 app.*.symbols
 

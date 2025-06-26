@@ -1,6 +1,9 @@
 import 'package:fe/presentation/pages/booking/booking_page.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_page.dart';
+import 'package:fe/presentation/pages/room/add/add_room.dart';
+import 'package:fe/presentation/pages/room/add/add_room_controller.dart';
+import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:fe/presentation/pages/room/room_page.dart';
 import 'package:fe/presentation/pages/setting/setting_page.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final DashboardController dashboardController =
       Get.put(DashboardController());
+  final RoomController _roomController = Get.put(RoomController());
+  final AddRoomController _addRoomController = Get.put(AddRoomController());
 
   int _selectedIndex = 0;
   late List<Widget> _pages;
@@ -24,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    dashboardController.loadRooms();
     _pages = [
       DashboardPage(),
       RoomPage(),
@@ -34,11 +38,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showAddRoomModal() {
+    _addRoomController.roomCodeController.text =
+        _roomController.generateRoomCode();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddRoomModal(),
+      builder: (context) => AddRoom(),
     );
   }
 

@@ -3,18 +3,18 @@ import 'package:fe/core/route/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Future.wait([
-    GetStorage.init(),
-  ]);
+  await GetStorage.init();
 
   final box = GetStorage();
   final token = box.read("token");
 
-  runApp(MyApp(initialRoute: token == null ? Routes.STARTED : Routes.HOME));
+  bool isTokenExpired = token == null || JwtDecoder.isExpired(token);
+
+  runApp(MyApp(initialRoute: isTokenExpired ? Routes.STARTED : Routes.HOME));
 }
 
 class MyApp extends StatelessWidget {

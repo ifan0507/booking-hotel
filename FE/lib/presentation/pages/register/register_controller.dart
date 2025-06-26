@@ -68,7 +68,8 @@ class RegisterController extends GetxController {
     final success = await _registerService.register(user);
     if (success == null) {
       isLoading.value = false;
-      Get.snackbar("Success", "Register successfully");
+      Get.snackbar("Success", "Register successfully",
+          backgroundColor: Colors.green, colorText: Colors.white);
       Get.offAllNamed(Routes.LOGIN);
     } else {
       isLoading.value = false;

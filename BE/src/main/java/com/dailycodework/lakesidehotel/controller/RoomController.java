@@ -94,14 +94,14 @@ public class RoomController {
     }
 
     @DeleteMapping("/delete/room/{roomId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId) {
         roomService.deleteRoom(roomId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/update/{roomId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId,
             @ModelAttribute RoomRequest roomRequest, MultipartFile photo) throws SQLException, IOException {
 
@@ -164,8 +164,8 @@ public class RoomController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(),
-                room.getRoomType(), room.getRoomPrice(),
+        return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomType(), room.getRoomName(),
+                room.getRoomDescription(), room.getRoomPrice(),
                 room.isBooked(), room.isAc(), room.isTv(), room.isMiniBar(),
                 room.isJacuzzi(), room.isBalcony(), room.isKitchen(), photoBytes, bookingInfo);
     }
