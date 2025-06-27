@@ -102,9 +102,18 @@ class LoginService extends Api {
     }
   }
 
+  Future<bool> isUser() async {
+    try {
+      final roles = await getUserRoles();
+      return roles.contains('ROLE_USER');
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     final box = GetStorage();
     box.erase();
-    Get.offAllNamed(Routes.LOGIN);
+    Get.offAllNamed(Routes.STARTED);
   }
 }

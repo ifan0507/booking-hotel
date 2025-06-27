@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/data/models/room.dart';
+import 'package:fe/data/services/login_service.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room_controlller.dart';
 import 'package:fe/presentation/pages/room/room_controller.dart';
@@ -17,6 +19,7 @@ class RoomPage extends StatefulWidget {
 
 class _RoomPageState extends State<RoomPage> {
   final RoomController _roomController = Get.put(RoomController());
+  final HomeController _homeController = Get.put(HomeController());
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
 
@@ -43,7 +46,7 @@ class _RoomPageState extends State<RoomPage> {
   @override
   void initState() {
     super.initState();
-    _roomController.loadRooms();
+    // _roomController.loadRooms();
   }
 
   @override
@@ -92,18 +95,18 @@ class _RoomPageState extends State<RoomPage> {
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: whiteColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: whiteColor,
-                            size: 24,
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.all(12),
+                        //   decoration: BoxDecoration(
+                        //     color: whiteColor.withOpacity(0.2),
+                        //     borderRadius: BorderRadius.circular(15),
+                        //   ),
+                        //   child: Icon(
+                        //     Icons.add,
+                        //     color: whiteColor,
+                        //     size: 24,
+                        //   ),
+                        // ),
                       ],
                     ),
 
@@ -363,7 +366,9 @@ class _RoomPageState extends State<RoomPage> {
                     topRight: Radius.circular(16),
                   ),
                   child: _buildRoomImage(room)),
-              Positioned(
+              if (_homeController.isLoggedIn.value &&
+                  _homeController.isAdmin.value)
+                Positioned(
                   top: 5,
                   right: 5,
                   child: Theme(
@@ -436,7 +441,8 @@ class _RoomPageState extends State<RoomPage> {
                         ),
                       ],
                     ),
-                  )),
+                  ),
+                ),
               Positioned(
                 top: 12,
                 left: 12,

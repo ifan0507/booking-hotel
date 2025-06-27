@@ -76,7 +76,7 @@ class LoginController extends GetxController {
     try {
       await _loginService.logout();
       userDisplayText.value = "Halo Guest";
-      Get.offAllNamed(Routes.LOGIN);
+      Get.offAllNamed(Routes.STARTED);
     } catch (e) {
       Get.snackbar("Error", "Gagal logout");
     }

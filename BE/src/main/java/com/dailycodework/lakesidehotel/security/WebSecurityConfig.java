@@ -60,7 +60,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/rooms/**")
-                        .permitAll().requestMatchers("/roles/**", "/bookings/**").hasRole("ADMIN")
+                        .permitAll().requestMatchers("/roles/**", "/bookings/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationTokenFilter(),

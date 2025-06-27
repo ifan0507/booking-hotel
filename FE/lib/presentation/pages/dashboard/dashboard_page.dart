@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _dashboardController.loadRooms();
+    // _dashboardController.loadRooms();
   }
 
   @override
