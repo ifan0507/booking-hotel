@@ -19,13 +19,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   int getBookedRoomsCount() {
     return _dashboardController.rooms
-        .where((room) => room.isBooked == true)
+        .where((room) => room.booked == true)
         .length;
   }
 
   int getNoBookedRoomsCount() {
     return _dashboardController.rooms
-        .where((room) => room.isBooked == false)
+        .where((room) => room.booked == false)
         .length;
   }
 
@@ -412,13 +412,13 @@ class _DashboardPageState extends State<DashboardPage> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: (room.isBooked ?? false)
+                          color: (room.booked ?? false)
                               ? Colors.red
                               : Colors.green,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          (room.isBooked ?? false) ? 'Booked' : 'Available',
+                          (room.booked ?? false) ? 'Booked' : 'Available',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,

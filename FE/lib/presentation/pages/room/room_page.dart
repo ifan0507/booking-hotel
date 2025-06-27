@@ -488,13 +488,11 @@ class _RoomPageState extends State<RoomPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: (room.isBooked ?? false)
-                            ? Colors.red
-                            : Colors.green,
+                        color: room.booked == false ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        room.isBooked ?? false ? 'Booked' : 'Available',
+                        room.booked ?? false ? 'Booked' : 'Available',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -584,7 +582,7 @@ class _RoomPageState extends State<RoomPage> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: (room.isBooked ?? false)
+                      onPressed: (room.booked ?? false)
                           ? null
                           : () {
                               // Tambahkan ini
@@ -603,7 +601,7 @@ class _RoomPageState extends State<RoomPage> {
                         elevation: 2,
                       ),
                       child: Text(
-                        (room.isBooked ?? false) ? 'Not Available' : 'Book Now',
+                        (room.booked ?? false) ? 'Not Available' : 'Book Now',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

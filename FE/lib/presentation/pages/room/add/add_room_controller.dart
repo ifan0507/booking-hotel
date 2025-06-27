@@ -70,7 +70,7 @@ class AddRoomController extends GetxController {
         roomName: roomNameController.text.trim(),
         roomDescription: roomDescriptionController.text.trim(),
         roomPrice: double.tryParse(roomPriceController.text) ?? 0.0,
-        isBooked: false,
+        booked: false,
         photoFile: photoFile,
         ac: ac.value,
         tv: tv.value,

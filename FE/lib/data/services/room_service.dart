@@ -38,7 +38,7 @@ class RoomService extends Api {
       request.fields['roomName'] = room.roomName.toString();
       request.fields['roomDescription'] = room.roomDescription.toString();
       request.fields['roomPrice'] = room.roomPrice.toString();
-      request.fields['isBooked'] = room.isBooked.toString();
+      request.fields['booked'] = room.booked.toString();
       request.fields['ac'] = room.ac.toString();
       request.fields['tv'] = room.tv.toString();
       request.fields['miniBar'] = room.miniBar.toString();
@@ -109,7 +109,7 @@ class RoomService extends Api {
       request.fields['roomName'] = room.roomName.toString();
       request.fields['roomDescription'] = room.roomDescription.toString();
       request.fields['roomPrice'] = room.roomPrice.toString();
-      request.fields['isBooked'] = room.isBooked.toString();
+      request.fields['booked'] = room.booked.toString();
       request.fields['ac'] = room.ac.toString();
       request.fields['tv'] = room.tv.toString();
       request.fields['miniBar'] = room.miniBar.toString();
