@@ -5,6 +5,9 @@ import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
 import com.dailycodework.lakesidehotel.repository.BookingRepository;
+import com.dailycodework.lakesidehotel.response.BookingResponse;
+import com.dailycodework.lakesidehotel.response.RoomResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -19,12 +22,10 @@ public class BookingService implements IBookingService {
     private final BookingRepository bookingRepository;
     private final IRoomService roomService;
 
-
     @Override
     public List<BookedRoom> getAllBookings() {
         return bookingRepository.findAll();
     }
-
 
     @Override
     public List<BookedRoom> getBookingsByUserEmail(String email) {
@@ -42,53 +43,58 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public String saveBooking(Long roomId, BookedRoom bookingRequest) {
-        if (bookingRequest.getCheckOutDate().isBefore(bookingRequest.getCheckInDate())){
+    public BookingResponse saveBooking(Long roomId, BookedRoom bookingRequest) {
+        if (bookingRequest.getCheckOutDate().isBefore(bookingRequest.getCheckInDate())) {
             throw new InvalidBookingRequestException("Check-in date must come before check-out date");
         }
         Room room = roomService.getRoomById(roomId).get();
         List<BookedRoom> existingBookings = room.getBookings();
-        boolean roomIsAvailable = roomIsAvailable(bookingRequest,existingBookings);
-        if (roomIsAvailable){
+        boolean roomIsAvailable = roomIsAvailable(bookingRequest, existingBookings);
+        if (roomIsAvailable) {
             room.addBooking(bookingRequest);
             bookingRepository.save(bookingRequest);
-        }else{
-            throw  new InvalidBookingRequestException("Sorry, This room is not available for the selected dates;");
+        } else {
+            throw new InvalidBookingRequestException("Sorry, This room is not available for the selected dates;");
         }
-        return bookingRequest.getBookingConfirmationCode();
+        return new BookingResponse(
+                bookingRequest.getBookingId(),
+                bookingRequest.getCheckInDate(),
+                bookingRequest.getCheckOutDate(),
+                bookingRequest.getGuestFullName(),
+                bookingRequest.getGuestEmail(),
+                bookingRequest.getBookingConfirmationCode(),
+                new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(), room.getRoomType(),
+                        room.getRoomPrice(), room.getTotal_guest(), room.isBooked(), room.getRoomDescription(),
+                        room.isAc(), room.isTv(),
+                        room.isMiniBar(), room.isBalcony(), room.isJacuzzi(), room.isKitchen()));
     }
 
     @Override
     public BookedRoom findByBookingConfirmationCode(String confirmationCode) {
         return bookingRepository.findByBookingConfirmationCode(confirmationCode)
-                .orElseThrow(() -> new ResourceNotFoundException("No booking found with booking code :"+confirmationCode));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("No booking found with booking code :" + confirmationCode));
 
     }
-
 
     private boolean roomIsAvailable(BookedRoom bookingRequest, List<BookedRoom> existingBookings) {
         return existingBookings.stream()
-                .noneMatch(existingBooking ->
-                        bookingRequest.getCheckInDate().equals(existingBooking.getCheckInDate())
-                                || bookingRequest.getCheckOutDate().isBefore(existingBooking.getCheckOutDate())
-                                || (bookingRequest.getCheckInDate().isAfter(existingBooking.getCheckInDate())
+                .noneMatch(existingBooking -> bookingRequest.getCheckInDate().equals(existingBooking.getCheckInDate())
+                        || bookingRequest.getCheckOutDate().isBefore(existingBooking.getCheckOutDate())
+                        || (bookingRequest.getCheckInDate().isAfter(existingBooking.getCheckInDate())
                                 && bookingRequest.getCheckInDate().isBefore(existingBooking.getCheckOutDate()))
-                                || (bookingRequest.getCheckInDate().isBefore(existingBooking.getCheckInDate())
+                        || (bookingRequest.getCheckInDate().isBefore(existingBooking.getCheckInDate())
 
                                 && bookingRequest.getCheckOutDate().equals(existingBooking.getCheckOutDate()))
-                                || (bookingRequest.getCheckInDate().isBefore(existingBooking.getCheckInDate())
+                        || (bookingRequest.getCheckInDate().isBefore(existingBooking.getCheckInDate())
 
                                 && bookingRequest.getCheckOutDate().isAfter(existingBooking.getCheckOutDate()))
 
-                                || (bookingRequest.getCheckInDate().equals(existingBooking.getCheckOutDate())
+                        || (bookingRequest.getCheckInDate().equals(existingBooking.getCheckOutDate())
                                 && bookingRequest.getCheckOutDate().equals(existingBooking.getCheckInDate()))
 
-                                || (bookingRequest.getCheckInDate().equals(existingBooking.getCheckOutDate())
-                                && bookingRequest.getCheckOutDate().equals(bookingRequest.getCheckInDate()))
-                );
+                        || (bookingRequest.getCheckInDate().equals(existingBooking.getCheckOutDate())
+                                && bookingRequest.getCheckOutDate().equals(bookingRequest.getCheckInDate())));
     }
-
-
-
 
 }

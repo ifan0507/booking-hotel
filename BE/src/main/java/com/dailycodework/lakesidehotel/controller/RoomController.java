@@ -4,7 +4,6 @@ import com.dailycodework.lakesidehotel.exception.PhotoRetrievalException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
-import com.dailycodework.lakesidehotel.repository.RoomRepository;
 import com.dailycodework.lakesidehotel.request.RoomRequest;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -52,7 +50,8 @@ public class RoomController {
             RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomCode(),
                     savedRoom.getRoomType(),
                     savedRoom.getRoomDescription(),
-                    savedRoom.getRoomPrice(), savedRoom.isBooked(), savedRoom.getRoomName(), savedRoom.isAc(),
+                    savedRoom.getRoomPrice(), savedRoom.getTotal_guest(), savedRoom.isBooked(), savedRoom.getRoomName(),
+                    savedRoom.isAc(),
                     savedRoom.isTv(),
                     savedRoom.isMiniBar(),
                     savedRoom.isJacuzzi(), savedRoom.isBalcony(), savedRoom.isKitchen());
@@ -165,7 +164,7 @@ public class RoomController {
             }
         }
         return new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomType(), room.getRoomName(),
-                room.getRoomDescription(), room.getRoomPrice(),
+                room.getRoomDescription(), room.getRoomPrice(), room.getTotal_guest(),
                 room.isBooked(), room.isAc(), room.isTv(), room.isMiniBar(),
                 room.isJacuzzi(), room.isBalcony(), room.isKitchen(), photoBytes, bookingInfo);
     }

@@ -20,6 +20,7 @@ public class RoomResponse {
     private String roomName;
     private String roomType;
     private BigDecimal roomPrice;
+    private int total_guest;
     private boolean isBooked;
     private boolean ac = false;
     private boolean tv = false;
@@ -36,6 +37,7 @@ public class RoomResponse {
     private List<BookingResponse> bookings;
 
     public RoomResponse(Long id, String roomCode, String roomName, String roomType, BigDecimal roomPrice,
+            int total_guest,
             boolean isBooked,
             String roomDescription, boolean ac, boolean tv, boolean miniBar, boolean balcony, boolean jacuzzi,
             boolean kitchen) {
@@ -45,6 +47,7 @@ public class RoomResponse {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
         this.roomPrice = roomPrice;
+        this.total_guest = total_guest;
         this.isBooked = isBooked;
         this.ac = ac;
         this.tv = tv;
@@ -55,7 +58,7 @@ public class RoomResponse {
     }
 
     public RoomResponse(Long id, String roomCode, String roomType, String roomName, String roomDescription,
-            BigDecimal roomPrice,
+            BigDecimal roomPrice, int total_guest,
             boolean isBooked, boolean ac, boolean tv,
             boolean miniBar, boolean balcony, boolean jacuzzi, boolean kitchen,
             byte[] photoBytes, List<BookingResponse> bookings) {
@@ -65,6 +68,7 @@ public class RoomResponse {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
         this.roomPrice = roomPrice;
+        this.total_guest = total_guest;
         this.isBooked = isBooked;
         this.photo = photoBytes != null ? Base64.encodeBase64String(photoBytes) : null;
         this.bookings = bookings;

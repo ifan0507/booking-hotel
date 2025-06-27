@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class BookedRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long bookingId;
+    private Long bookingId;
 
     @Column(name = "check_in")
     private LocalDate checkInDate;
@@ -28,19 +28,10 @@ public class BookedRoom {
     private LocalDate checkOutDate;
 
     @Column(name = "guest_fullName")
-    private String guestFullName; 
+    private String guestFullName;
 
     @Column(name = "guest_email")
     private String guestEmail;
-
-    @Column(name = "adults")
-    private int NumOfAdults;
-
-    @Column(name = "children")
-    private int NumOfChildren;
-
-    @Column(name = "total_guest")
-    private int totalNumOfGuest;
 
     @Column(name = "confirmation_Code")
     private String bookingConfirmationCode;
@@ -48,20 +39,6 @@ public class BookedRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    public void calculateTotalNumberOfGuest(){
-        this.totalNumOfGuest = this.NumOfAdults + NumOfChildren;
-    }
-
-    public void setNumOfAdults(int numOfAdults) {
-        NumOfAdults = numOfAdults;
-        calculateTotalNumberOfGuest();
-    }
-
-    public void setNumOfChildren(int numOfChildren) {
-        NumOfChildren = numOfChildren;
-        calculateTotalNumberOfGuest();
-    }
 
     public void setBookingConfirmationCode(String bookingConfirmationCode) {
         this.bookingConfirmationCode = bookingConfirmationCode;

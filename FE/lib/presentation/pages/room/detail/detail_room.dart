@@ -1,6 +1,10 @@
+import 'package:fe/core/route/app_routes.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
+import 'package:fe/presentation/pages/room/booking/booking_room_controller.dart';
+import 'package:fe/presentation/pages/room/detail/detail_room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fe/data/models/room.dart';
-import 'package:fe/presentation/pages/room/detail/detail-room_controller.dart';
+import 'package:fe/presentation/pages/room/booking/booking_room.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -13,13 +17,27 @@ class DetailRoomScreen extends StatefulWidget {
 }
 
 class _DetailRoomState extends State<DetailRoomScreen> {
+  final HomeController _homeController = Get.put(HomeController());
   final DetailRoomController _detailRoomController =
       Get.put(DetailRoomController());
+  final BookingRoomController _bookingRoomController =
+      Get.put(BookingRoomController());
 
-  @override
-  void initState() {
-    super.initState();
-    print('Get.arguments = ${Get.arguments}'); // Debug print
+  void _showBookingModal(Room room) {
+    _bookingRoomController.fullNameController.text =
+        _bookingRoomController.userName.value;
+    _bookingRoomController.emailController.text =
+        _bookingRoomController.userEmail.value;
+    final controller = Get.put(BookingRoomController());
+    controller.initControllers(room);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BookingModal(),
+    );
   }
 
   bool _isExpanded = false;
@@ -32,9 +50,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
-    final Room room = Get.arguments;
-
-    final description = room.roomDescription ?? '';
+    final description = _detailRoomController.room.roomDescription ?? '';
     final wordCount = description.trim().split(RegExp(r'\s+')).length;
 
     // Tampilkan deskripsi sebagian jika belum expanded
@@ -44,7 +60,8 @@ class _DetailRoomState extends State<DetailRoomScreen> {
 
     final formatCurrency =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-    final priceFormatted = formatCurrency.format(room.roomPrice ?? 0);
+    final priceFormatted =
+        formatCurrency.format(_detailRoomController.room.roomPrice ?? 0);
 
     return Scaffold(
       body: Stack(
@@ -99,10 +116,12 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                   ? screenHeight * 0.5
                                   : (isTablet ? 400 : screenHeight * 0.4),
                               width: double.infinity,
-                              child: room.photo != null &&
-                                      room.photo!.isNotEmpty
+                              child: _detailRoomController.room.photo != null &&
+                                      _detailRoomController
+                                          .room.photo!.isNotEmpty
                                   ? Image.memory(
-                                      base64Decode(room.photo!),
+                                      base64Decode(
+                                          _detailRoomController.room.photo!),
                                       fit: BoxFit.cover,
                                       width: double.infinity,
                                       errorBuilder: (context, error,
@@ -134,7 +153,8 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          room.roomName ?? 'Detail Kamar',
+                                          _detailRoomController.room.roomName ??
+                                              'Detail Kamar',
                                           style: TextStyle(
                                             fontSize: isTablet ? 32 : 28,
                                             fontWeight: FontWeight.bold,
@@ -145,7 +165,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                         TextButton(
                                           onPressed: () {},
                                           child: Text(
-                                            room.roomType ?? '',
+                                            _detailRoomController
+                                                    .room.roomType ??
+                                                '',
                                             style: TextStyle(
                                               fontSize: isTablet ? 18 : 16,
                                               color: const Color(0xFF1a237e),
@@ -163,7 +185,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            room.roomName ?? 'Detail Kamar',
+                                            _detailRoomController
+                                                    .room.roomName ??
+                                                'Detail Kamar',
                                             style: TextStyle(
                                               fontSize: isTablet
                                                   ? 32
@@ -264,8 +288,8 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                               SizedBox(height: isTablet ? 20 : 16),
 
                               // Facilities Icons - Responsive Grid
-                              _buildResponsiveFacilities(
-                                  context, isTablet, screenWidth, room),
+                              _buildResponsiveFacilities(context, isTablet,
+                                  screenWidth, _detailRoomController.room),
 
                               SizedBox(height: isTablet ? 48 : 60),
                             ],
@@ -326,7 +350,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                room.roomType ?? 'Uknown Type',
+                _detailRoomController.room.roomType ?? 'Uknown Type',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -399,7 +423,12 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _homeController.isLoggedIn.value
+                                  ? _showBookingModal(
+                                      _detailRoomController.room)
+                                  : Get.offAllNamed(Routes.LOGIN);
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1a237e),
                               foregroundColor: Colors.white,
@@ -462,7 +491,12 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                           child: Padding(
                             padding: EdgeInsets.only(left: isTablet ? 32 : 24),
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _homeController.isLoggedIn.value
+                                    ? _showBookingModal(
+                                        _detailRoomController.room)
+                                    : Get.offAllNamed(Routes.LOGIN);
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1a237e),
                                 foregroundColor: Colors.white,

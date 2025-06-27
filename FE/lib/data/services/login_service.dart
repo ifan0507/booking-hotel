@@ -69,6 +69,16 @@ class LoginService extends Api {
     }
   }
 
+  Future<String> getEmail() async {
+    try {
+      final box = GetStorage();
+      final userEmail = box.read("user_email");
+      return userEmail ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   Future<String> getUserDisplayText() async {
     try {
       bool loggedIn = await isLoggedIn();
