@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 
 /**
@@ -21,6 +23,9 @@ public class BookedRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
 
+    @Column(name = "bookingDate")
+    private LocalDate bookingDate;
+
     @Column(name = "check_in")
     private LocalDate checkInDate;
 
@@ -33,8 +38,14 @@ public class BookedRoom {
     @Column(name = "guest_email")
     private String guestEmail;
 
+    @Column(name = "phone_number")
+    private BigInteger phone_number;
+
     @Column(name = "confirmation_Code")
     private String bookingConfirmationCode;
+
+    @Column(name = "total_price")
+    private BigDecimal total_price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")

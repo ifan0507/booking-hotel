@@ -7,11 +7,11 @@ import 'package:http/http.dart' as http;
 class BookingService extends Api {
   Future<Map<String, dynamic>?> bookingRoom(Booking booking, int roomId) async {
     print('Booking data to be sent:');
-    print('Room ID: $roomId');
-    print('Check-in: ${booking.checkInDate}');
-    print('Check-out: ${booking.checkOutDate}');
-    print('Guest name: ${booking.guest_fullName}');
-    print('Guest email: ${booking.guest_email}');
+    // print('Room ID: $roomId');
+    // print('Check-in: ${booking.checkInDate}');
+    // print('Check-out: ${booking.checkOutDate}');
+    // print('Guest name: ${booking.guest_fullName}');
+    // print('Guest email: ${booking.guest_email}');
 
     final url = Uri.parse('$baseUrl/bookings/room/$roomId/booking');
 

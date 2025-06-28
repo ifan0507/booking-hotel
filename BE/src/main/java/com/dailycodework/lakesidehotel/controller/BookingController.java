@@ -89,9 +89,14 @@ public class BookingController {
                 theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen());
         ;
         return new BookingResponse(
-                booking.getBookingId(), booking.getCheckInDate(),
-                booking.getCheckOutDate(), booking.getGuestFullName(),
+                booking.getBookingId(),
+                booking.getBookingDate(),
+                booking.getCheckInDate(),
+                booking.getCheckOutDate(),
+                booking.getGuestFullName(),
                 booking.getGuestEmail(),
-                booking.getBookingConfirmationCode(), room);
+                booking.getPhone_number(),
+                booking.getBookingConfirmationCode(),
+                booking.getTotal_price(), room);
     }
 }

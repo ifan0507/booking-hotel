@@ -5,6 +5,7 @@ import 'package:fe/data/services/booking_service.dart';
 import 'package:fe/data/services/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class BookingRoomController extends GetxController {
   final BookingService _bookingService = BookingService();
@@ -56,13 +57,37 @@ class BookingRoomController extends GetxController {
   }
 
   void addBooking() async {
+    DateTime dateNow = DateTime.now();
+    String bookingDate = DateFormat('yyyy-MM-dd').format(dateNow);
+
+    DateTime checkIn =
+        DateFormat('yyyy-MM-dd').parse(checkInController.text.trim());
+    DateTime checkOut =
+        DateFormat('yyyy-MM-dd').parse(checkOutController.text.trim());
+
+    int jumlahHari = checkOut.difference(checkIn).inDays;
+
+    if (jumlahHari <= 0) {
+      Get.snackbar('Invalid Date', 'Check-out must be after check-in',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    if (roomPrice == null) {
+      Get.snackbar('Error', 'Room rates are not yet available');
+      return;
+    }
+    double totalHarga = jumlahHari * roomPrice!;
+
     final roomId = idRoom ?? 0;
     final booking = Booking(
-      checkInDate: checkInController.text.trim(),
-      checkOutDate: checkOutController.text.trim(),
-      guest_email: emailController.text.trim(),
-      guest_fullName: fullNameController.text.trim(),
-    );
+        bookingDate: bookingDate,
+        checkInDate: checkInController.text.trim(),
+        checkOutDate: checkOutController.text.trim(),
+        guestEmail: emailController.text.trim(),
+        guestFullName: fullNameController.text.trim(),
+        phone_number: phoneController.text.trim(),
+        total_price: totalHarga);
 
     isLoading.value = true;
 

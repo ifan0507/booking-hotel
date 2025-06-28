@@ -58,11 +58,14 @@ public class BookingService implements IBookingService {
         }
         return new BookingResponse(
                 bookingRequest.getBookingId(),
+                bookingRequest.getBookingDate(),
                 bookingRequest.getCheckInDate(),
                 bookingRequest.getCheckOutDate(),
                 bookingRequest.getGuestFullName(),
                 bookingRequest.getGuestEmail(),
+                bookingRequest.getPhone_number(),
                 bookingRequest.getBookingConfirmationCode(),
+                bookingRequest.getTotal_price(),
                 new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(), room.getRoomType(),
                         room.getRoomPrice(), room.getTotal_guest(), room.isBooked(), room.getRoomDescription(),
                         room.isAc(), room.isTv(),

@@ -2,30 +2,39 @@ import 'package:fe/data/models/room.dart';
 
 class Booking {
   final int? id;
+  final String? bookingDate;
   final String? checkInDate;
   final String? checkOutDate;
-  final String? guest_fullName;
-  final String? guest_email;
-  final String? confirmation_Code;
+  final String? guestFullName;
+  final String? guestEmail;
+  final String? phone_number;
+  final String? bookingConfirmationCode;
+  final double? total_price;
   final Room? room;
 
   Booking(
       {this.id,
+      this.bookingDate,
       this.checkInDate,
       this.checkOutDate,
-      this.guest_email,
-      this.guest_fullName,
-      this.confirmation_Code,
+      this.guestEmail,
+      this.guestFullName,
+      this.phone_number,
+      this.bookingConfirmationCode,
+      this.total_price,
       this.room});
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'bookingDate': bookingDate,
       'checkInDate': checkInDate,
       'checkOutDate': checkOutDate,
-      'guest_email': guest_email,
-      'guest_fullName': guest_fullName,
-      'confirmation_Code': confirmation_Code,
+      'guestEmail': guestEmail,
+      'guestFullName': guestFullName,
+      'phone_number': phone_number,
+      'bookingConfirmationCode': bookingConfirmationCode,
+      'total_price': total_price,
       'room': room
     };
   }
@@ -33,11 +42,14 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> jsonData) {
     return Booking(
         id: jsonData['id'] ?? "",
+        bookingDate: jsonData['bookingDate'] ?? "",
         checkInDate: jsonData['checkInDate'] ?? "",
         checkOutDate: jsonData['checkOutDate'] ?? "",
-        guest_email: jsonData['guest_email'] ?? "",
-        guest_fullName: jsonData['guest_fullName'] ?? "",
-        confirmation_Code: jsonData['confirmation_Code'] ?? "",
+        guestEmail: jsonData['guestEmail'] ?? "",
+        guestFullName: jsonData['guestFullName'] ?? "",
+        phone_number: jsonData['phone_number'] ?? "",
+        bookingConfirmationCode: jsonData['bookingConfirmationCode'] ?? "",
+        total_price: jsonData['total_price'] ?? 0.0,
         room:
             jsonData['room'] != null ? Room.fromJson(jsonData['room']) : null);
   }

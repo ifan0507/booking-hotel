@@ -1,6 +1,8 @@
+import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/presentation/pages/room/success_booking/success_booking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class SuccessBooking extends StatefulWidget {
   @override
@@ -61,13 +63,15 @@ class _SuccessBookingState extends State<SuccessBooking>
     final data = controller.bookingData;
     final room = controller.room;
 
+    final formatCurrency =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final priceFormatted = formatCurrency.format(data['total_price'] ?? 0);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top,
             child: Column(
               children: [
                 // Header dengan gradient
@@ -92,36 +96,20 @@ class _SuccessBookingState extends State<SuccessBooking>
                     child: Column(
                       children: [
                         // Top bar
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(width: 40),
-                            Text(
-                              'ASTON HOTEL',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     Text(
+                        //       'ASTON HOTEL',
+                        //       style: TextStyle(
+                        //         fontSize: 20,
+                        //         fontWeight: FontWeight.bold,
+                        //         color: Colors.white,
+                        //         letterSpacing: 1.2,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
 
                         SizedBox(height: 24),
 
@@ -131,32 +119,65 @@ class _SuccessBookingState extends State<SuccessBooking>
                           child: Column(
                             children: [
                               Container(
-                                width: 80,
-                                height: 80,
+                                width: 100,
+                                height: 100,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 30,
+                                      offset: Offset(0, 15),
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.8),
                                       blurRadius: 10,
-                                      offset: Offset(0, 5),
+                                      offset: Offset(0, -5),
                                     ),
                                   ],
                                 ),
-                                child: Icon(
-                                  Icons.check,
-                                  color: Color(0xFF1a237e),
-                                  size: 40,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.white,
+                                        Colors.grey.shade50,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.check_rounded,
+                                    color: Color(0xFF1a237e),
+                                    size: 50,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              SizedBox(height: 24),
+
+                              // Modern title
                               Text(
-                                'Reservasi/Booking Hotel',
+                                'Booking Confirmed!',
                                 style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
                                   color: Colors.white,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+
+                              SizedBox(height: 8),
+
+                              Text(
+                                'Hotel Reservation',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white.withOpacity(0.8),
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                               SizedBox(height: 8),
@@ -168,7 +189,7 @@ class _SuccessBookingState extends State<SuccessBooking>
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  'Status: BERHASIL',
+                                  'SUCCESSFULLY',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -185,218 +206,174 @@ class _SuccessBookingState extends State<SuccessBooking>
                 ),
 
                 // Content area
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Detail transaksi
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Color(0xFF1a237e).withOpacity(0.1),
-                                width: 1,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildDetailRow('Confirmation Booking Code',
-                                    '${data['bookingConfirmationCode']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Tanggal Booking', '27 Jun 2025 14:30:25'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Nomor Ref', '20250627143025887423'),
-                                _buildDivider(),
-                                _buildDetailRow('Terminal', 'XXXXXXXXX9876'),
-                              ],
+                Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // // Detail transaksi
+                        // Container(
+                        //   width: double.infinity,
+                        //   padding: EdgeInsets.all(20),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.grey[50],
+                        //     borderRadius: BorderRadius.circular(16),
+                        //     border: Border.all(
+                        //       color: Color(0xFF1a237e).withOpacity(0.1),
+                        //       width: 1,
+                        //     ),
+                        //   ),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       _buildDetailRow(
+                        //           'Confirmation Code', 'AST2024HTL001234'),
+                        //       _buildDivider(),
+                        //       _buildDetailRow(
+                        //           'Tanggal Booking', '27 Jun 2025 14:30:25'),
+                        //       _buildDivider(),
+                        //       _buildDetailRow(
+                        //           'Nomor Ref', '20250627143025887423'),
+                        //       _buildDivider(),
+                        //       _buildDetailRow('Terminal', 'XXXXXXXXX9876'),
+                        //     ],
+                        //   ),
+                        // ),
+
+                        SizedBox(height: 20),
+
+                        // Detail booking hotel
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF1a237e).withOpacity(0.03),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Color(0xFF1a237e).withOpacity(0.1),
+                              width: 1,
                             ),
                           ),
-
-                          SizedBox(height: 20),
-
-                          // Detail booking hotel
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF1a237e).withOpacity(0.03),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Color(0xFF1a237e).withOpacity(0.1),
-                                width: 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'BOOKING: HOTEL RESERVATION',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1a237e),
+                                ),
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'BOOKING: HOTEL RESERVATION',
+                              SizedBox(height: 16),
+                              _buildDetailRow('Confirmation Code',
+                                  '${data['bookingConfirmationCode']}'),
+                              _buildDivider(),
+                              _buildDetailRow('Full Name Guest',
+                                  '${data['guestFullName']}'),
+                              _buildDivider(),
+                              _buildDetailRow('Phone Number Guest',
+                                  '${data['phone_number']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Room Name', '${room['roomName']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Room Type', '${room['roomType']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Total Guest', '${room['total_guest']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Check In', '${data['checkInDate']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Check Out', '${data['checkOutDate']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Booking Date', '${data['bookingDate']}'),
+                              _buildDivider(),
+                              _buildDetailRow(
+                                  'Hotel Name', 'ASTON HOTEL LUMAJANG'),
+                              SizedBox(height: 16),
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF1a237e).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'TOTAL PAID: $priceFormatted',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF1a237e),
                                   ),
-                                ),
-                                SizedBox(height: 16),
-                                _buildDetailRow('Full Name Guest',
-                                    '${data['guest_fullName']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Room Name', '${room['roomName']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Room Type', '${room['roomType']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Total Guest', '${room['total_guest']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Check In', '${data['checkInDate']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Check Out', '${data['checkOutDate']}'),
-                                _buildDivider(),
-                                _buildDetailRow(
-                                    'Hotel Name', 'ASTON HOTEL LUMAJANG'),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Booking Order ID:',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  '20250627140121481030100166892556232974',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF1a237e),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  'Transaction ID: 20250627144437104408883423',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF1a237e),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF1a237e).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    'TOTAL DIBAYAR: Rp. 2.450.000',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1a237e),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: 24),
-
-                          // Footer message
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  'Terima kasih telah menggunakan ASTON HOTEL.',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Silakan tunjukkan konfirmasi ini saat check-in.',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[500],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+
+                        SizedBox(height: 24),
+
+                        // Footer message
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Thank you for using ASTON HOTEL.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Please show this confirmation upon check-in.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
 
                 // Tombol aksi
                 Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding:
+                      EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12),
                   child: Column(
                     children: [
                       Container(
                         width: double.infinity,
                         height: 56,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            // Aksi download/simpan
-                          },
-                          icon: Icon(Icons.download_rounded, size: 20),
-                          label: Text(
-                            'Simpan Bukti Booking',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF1a237e),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        height: 56,
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Get.offAllNamed(Routes.HOME);
                           },
                           icon: Icon(Icons.home_rounded, size: 20),
                           label: Text(
-                            'Kembali ke Beranda',
+                            'Back to Home',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
