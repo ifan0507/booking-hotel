@@ -39,9 +39,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
     final wordCount = description.trim().split(RegExp(r'\s+')).length;
 
     // Tampilkan deskripsi sebagian jika belum expanded
-    final shortDescription = _isExpanded || wordCount <= 100
+    final shortDescription = _isExpanded || wordCount <= 20
         ? description
-        : description.trim().split(' ').take(100).join(' ') + '...';
+        : description.trim().split(' ').take(20).join(' ') + '...';
 
     final formatCurrency =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);

@@ -34,6 +34,7 @@ public class Room {
     private boolean jacuzzi = false;
     private boolean kitchen = false;
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String roomDescription;
 
     @Lob

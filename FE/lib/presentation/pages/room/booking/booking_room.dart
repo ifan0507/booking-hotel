@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fe/data/models/room.dart';
-import 'package:fe/data/models/booking.dart'; // Import model Booking yang sudah ada
+import 'package:fe/data/models/booking.dart';
 
 class BookingRoom {
   static void show(BuildContext context, Room room) {
