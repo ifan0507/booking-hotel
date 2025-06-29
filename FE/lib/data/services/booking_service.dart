@@ -42,6 +42,29 @@ class BookingService extends Api {
     }
   }
 
+  Future<Map<String, dynamic>> checkOutBooking(int roomId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/bookings/check-out/$roomId'),
+        headers: {
+          'Content-Type': 'application/json',
+          ...getToken(), // Untuk authentikasi admin
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        return jsonData;
+      } else {
+        throw Exception(
+            'Failed to checkout room. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('[EXCEPTION] Error checkout room: $e');
+      throw Exception('Failed to checkout room: $e');
+    }
+  }
+
   Future<List<Booking>?> getBookingHistory(String userEmail) async {
     final url = Uri.parse('$baseUrl/bookings/user/$userEmail/bookings');
 

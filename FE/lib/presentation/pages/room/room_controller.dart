@@ -1,11 +1,13 @@
 import 'package:fe/data/models/room.dart';
 import 'package:fe/data/services/room_service.dart';
+import 'package:fe/data/services/booking_service.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RoomController extends GetxController {
   final RoomService _roomService = RoomService();
+  final BookingService _bookingService = BookingService();
   final DashboardController _dashboardController =
       Get.put(DashboardController());
 
@@ -60,6 +62,35 @@ class RoomController extends GetxController {
 
   Future<void> refreshRooms() async {
     await loadRooms();
+  }
+
+  Future<void> checkOutBooking(int roomId) async {
+    try {
+      isLoading.value = true;
+
+      final response = await _bookingService.checkOutBooking(roomId);
+
+      // Refresh room list setelah checkout
+      await loadRooms();
+
+      Get.snackbar(
+        'Success',
+        'Room checkout successful',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to checkout room: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void deleteRoom(int id) async {

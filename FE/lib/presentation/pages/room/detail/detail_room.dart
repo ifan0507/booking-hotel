@@ -90,6 +90,8 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                     width: double.infinity,
                     constraints: BoxConstraints(
                       maxWidth: isTablet ? 800 : double.infinity,
+                      // Menggunakan minimal height yang lebih fleksibel
+                      minHeight: screenHeight * 0.9,
                     ),
                     margin: isTablet
                         ? const EdgeInsets.symmetric(horizontal: 20)
@@ -107,6 +109,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
                       children: [
                         // Header Image with Heart Icon - Responsive Height
                         Stack(
@@ -135,18 +138,18 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                           ],
                         ),
 
-                        // Content Padding - Responsive
+                        // Content Padding - Responsive dengan Flexible
                         Padding(
                           padding: EdgeInsets.fromLTRB(
                             isTablet ? 32.0 : 20.0,
                             isTablet ? 32.0 : 20.0,
                             isTablet ? 32.0 : 20.0,
-                            0,
+                            isTablet ? 32.0 : 20.0,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Title and Show Map - Responsive layout
+                              // Title and Show Map
                               isLandscape && !isTablet
                                   ? Column(
                                       crossAxisAlignment:
@@ -201,10 +204,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                         ),
                                       ],
                                     ),
-
                               SizedBox(height: isTablet ? 12 : 8),
 
-                              // Rating - Responsive
+                              // Rating
                               Row(
                                 children: [
                                   Icon(
@@ -226,7 +228,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
 
                               SizedBox(height: isTablet ? 20 : 16),
 
-                              // Description - Responsive
+                              // Description
                               Text(
                                 shortDescription,
                                 style: TextStyle(
@@ -238,7 +240,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                 ),
                               ),
                               SizedBox(height: isTablet ? 12 : 8),
-                              if (wordCount > 100)
+                              if (wordCount > 20)
                                 TextButton(
                                   onPressed: () {
                                     setState(() {
@@ -273,10 +275,9 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                     ],
                                   ),
                                 ),
-
                               SizedBox(height: isTablet ? 32 : 24),
 
-                              // Facilities Section - Responsive
+                              // Facilities Section
                               Text(
                                 'Facilities',
                                 style: TextStyle(
@@ -285,17 +286,13 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                   color: Colors.black87,
                                 ),
                               ),
-
                               SizedBox(height: isTablet ? 20 : 16),
-
-                              // Facilities Icons - Responsive Grid
                               _buildResponsiveFacilities(context, isTablet,
                                   screenWidth, _detailRoomController.room),
-
-                              SizedBox(height: isTablet ? 48 : 60),
+                              SizedBox(height: isTablet ? 40 : 30),
                             ],
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -351,7 +348,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                _detailRoomController.room.roomType ?? 'Uknown Type',
+                _detailRoomController.room.roomType ?? 'Unknown Type',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -366,131 +363,65 @@ class _DetailRoomState extends State<DetailRoomScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ), // Hanya border radius di atas
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.grey.withOpacity(0.2),
-                    width: 1,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.grey.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              padding: EdgeInsets.fromLTRB(
-                isTablet ? 32.0 : 20.0,
-                isTablet ? 20.0 : 16.0,
-                isTablet ? 32.0 : 20.0,
-                MediaQuery.of(context).padding.bottom + (isTablet ? 20 : 16),
-              ),
-              child: isLandscape && screenWidth < 600
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Price section
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Price per night',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            Text(
-                              priceFormatted,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF4CAF50),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-                        // Book button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _homeController.isLoggedIn.value
-                                  ? _showBookingModal(
-                                      _detailRoomController.room)
-                                  : Get.offAllNamed(Routes.LOGIN);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1a237e),
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size(double.infinity, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 2,
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Book Now',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                padding: EdgeInsets.fromLTRB(
+                  isTablet ? 32.0 : 20.0,
+                  isTablet ? 20.0 : 16.0,
+                  isTablet ? 32.0 : 20.0,
+                  MediaQuery.of(context).padding.bottom + (isTablet ? 20 : 16),
+                ),
+                child: isLandscape && screenWidth < 600
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Price section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Price per night ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[600],
                                 ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  size: 18,
+                              ),
+                              Text(
+                                priceFormatted,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4CAF50),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Price per night',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: isTablet ? 16 : 14,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              priceFormatted,
-                              style: TextStyle(
-                                fontSize: isTablet
-                                    ? 36
-                                    : (screenWidth < 350 ? 28 : 24),
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1a237e),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: isTablet ? 32 : 24),
+                          const SizedBox(height: 12),
+                          // Book button
+                          SizedBox(
+                            width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
                                 _homeController.isLoggedIn.value
@@ -501,35 +432,105 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1a237e),
                                 foregroundColor: Colors.white,
-                                minimumSize:
-                                    Size(double.infinity, isTablet ? 60 : 55),
+                                minimumSize: const Size(double.infinity, 50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 elevation: 2,
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     'Book Now',
                                     style: TextStyle(
-                                      fontSize: isTablet ? 20 : 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Icon(
                                     Icons.arrow_forward,
-                                    size: isTablet ? 24 : 20,
+                                    size: 18,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Price per night',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: isTablet ? 16 : 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                priceFormatted,
+                                style: TextStyle(
+                                  fontSize: isTablet
+                                      ? 36
+                                      : (screenWidth < 350 ? 28 : 24),
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1a237e),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.only(left: isTablet ? 32 : 24),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _homeController.isLoggedIn.value
+                                      ? _showBookingModal(
+                                          _detailRoomController.room)
+                                      : Get.offAllNamed(Routes.LOGIN);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1a237e),
+                                  foregroundColor: Colors.white,
+                                  minimumSize:
+                                      Size(double.infinity, isTablet ? 60 : 55),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Book Now',
+                                      style: TextStyle(
+                                        fontSize: isTablet ? 20 : 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      size: isTablet ? 24 : 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
             ),
           ),
         ],
