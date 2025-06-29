@@ -214,7 +214,7 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    _detailRoomController.room.total_guest
+                                    '${_detailRoomController.room.total_guest} guest'
                                         .toString(),
                                     style: TextStyle(
                                       fontSize: isTablet ? 18 : 16,

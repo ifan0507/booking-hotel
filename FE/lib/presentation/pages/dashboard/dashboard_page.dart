@@ -1,3 +1,4 @@
+import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
 import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
@@ -300,8 +301,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       itemCount: _dashboardController.rooms.length,
                       itemBuilder: (context, index) {
-                        return _buildRoomCard(
-                            _dashboardController.rooms[index]);
+                        final room = _dashboardController.rooms[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.toNamed(Routes.DETAILROOM, arguments: room);
+                          },
+                          child: _buildRoomCard(room),
+                        );
                       },
                     ),
                   ),
