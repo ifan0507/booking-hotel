@@ -26,9 +26,9 @@ class AppPages {
         page: () => HomePage(),
         transition: Transition.leftToRight),
     GetPage(
-      name: '/rooms',
-      page: () => RoomPage(),
-    ),
+        name: '/rooms',
+        page: () => RoomPage(),
+        transition: Transition.leftToRight),
     GetPage(
       name: '/detail-rooms',
       page: () => DetailRoomScreen(),

@@ -47,7 +47,7 @@ class Booking {
         checkOutDate: jsonData['checkOutDate'] ?? "",
         guestEmail: jsonData['guestEmail'] ?? "",
         guestFullName: jsonData['guestFullName'] ?? "",
-        phone_number: jsonData['phone_number'] ?? "",
+        phone_number: jsonData['phone_number']?.toString(),
         bookingConfirmationCode: jsonData['bookingConfirmationCode'] ?? "",
         total_price: jsonData['total_price'] ?? 0.0,
         room:

@@ -1,6 +1,7 @@
 package com.dailycodework.lakesidehotel.controller;
 
 import com.dailycodework.lakesidehotel.exception.InvalidBookingRequestException;
+import com.dailycodework.lakesidehotel.exception.PhotoRetrievalException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
@@ -9,11 +10,15 @@ import com.dailycodework.lakesidehotel.response.RoomResponse;
 import com.dailycodework.lakesidehotel.service.IBookingService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,12 +100,21 @@ public class BookingController {
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
         Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
+        byte[] photoBytes = null;
+        Blob photoBlob = theRoom.getPhoto();
+        if (photoBlob != null) {
+            try {
+                photoBytes = photoBlob.getBytes(1, (int) photoBlob.length());
+            } catch (SQLException e) {
+                throw new PhotoRetrievalException("Error retrieving photo");
+            }
+        }
         RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomType(),
                 theRoom.getRoomDescription(),
                 theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomName(),
                 theRoom.isAc(), theRoom.isTv(),
                 theRoom.isMiniBar(),
-                theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen());
+                theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen(), photoBytes);
         ;
         return new BookingResponse(
                 booking.getBookingId(),

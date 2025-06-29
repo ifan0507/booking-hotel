@@ -41,4 +41,31 @@ class BookingService extends Api {
       return null;
     }
   }
+
+  Future<List<Booking>?> getBookingHistory(String userEmail) async {
+    final url = Uri.parse('$baseUrl/bookings/user/$userEmail/bookings');
+
+    final headers = {
+      ...getToken(),
+      "Content-Type": "application/json",
+    };
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        List<Booking> bookings =
+            data.map((json) => Booking.fromJson(json)).toList();
+        print('History bookings loaded: ${bookings.length}');
+        return bookings;
+      } else {
+        print('Failed to load booking history: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception occurred while loading history: $e');
+      return null;
+    }
+  }
 }
