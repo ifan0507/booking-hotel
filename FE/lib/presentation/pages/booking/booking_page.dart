@@ -1,7 +1,22 @@
+import 'package:fe/presentation/pages/booking/booking_controller.dart';
+import 'package:fe/core/route/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fe/data/models/booking.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
+import 'package:intl/intl.dart';
+import 'dart:convert';
 
-class BookingPage extends StatelessWidget {
+class BookingPage extends StatefulWidget {
   const BookingPage({super.key});
+
+  @override
+  State<BookingPage> createState() => _BookingPageState();
+}
+
+class _BookingPageState extends State<BookingPage> {
+  final BookingController _bookingController = Get.put(BookingController());
 
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
@@ -30,69 +45,106 @@ class BookingPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           // Booking List
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _buildBookingCard(
-                  hotelName: 'Grand Hyatt Jakarta',
-                  roomType: 'Deluxe King Room',
-                  status: 'Selesai',
-                  originalPrice: 'Rp2.500.000',
-                  finalPrice: 'Rp2.000.000',
-                  totalPrice: 'Rp2.200.000',
-                  nights: 2,
-                  imageUrl:
-                      'https://via.placeholder.com/80x80/4285F4/FFFFFF?text=Hotel',
-                  earnedPoints: 50,
+            child: Obx(() {
+              if (_bookingController.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (_bookingController.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Please Login',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          _bookingController.errorMessage.value,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _bookingController.refreshBookings(),
+                        child: const Text('Try Again'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (_bookingController.bookings.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.history,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No Booking History',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'You haven\'t made any bookings yet',
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () => _bookingController.refreshBookings(),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _bookingController.bookings.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        _buildBookingCard(_bookingController.bookings[index]),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  },
                 ),
-                const SizedBox(height: 12),
-                _buildBookingCard(
-                  hotelName: 'Hotel Santika Premiere',
-                  roomType: 'Superior Twin Bed',
-                  status: 'Selesai',
-                  originalPrice: 'Rp1.200.000',
-                  finalPrice: 'Rp890.000',
-                  totalPrice: 'Rp980.000',
-                  nights: 1,
-                  imageUrl:
-                      'https://via.placeholder.com/80x80/34A853/FFFFFF?text=Hotel',
-                  earnedPoints: 25,
-                ),
-                const SizedBox(height: 12),
-                _buildBookingCard(
-                  hotelName: 'Mercure Jakarta Sabang',
-                  roomType: 'Standard Double Room',
-                  status: 'Selesai',
-                  originalPrice: 'Rp800.000',
-                  finalPrice: 'Rp650.000',
-                  totalPrice: 'Rp715.000',
-                  nights: 1,
-                  imageUrl:
-                      'https://via.placeholder.com/80x80/EA4335/FFFFFF?text=Hotel',
-                  earnedPoints: 20,
-                ),
-              ],
-            ),
+              );
+            }),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBookingCard({
-    required String hotelName,
-    required String roomType,
-    required String status,
-    required String originalPrice,
-    required String finalPrice,
-    required String totalPrice,
-    required int nights,
-    required String imageUrl,
-    required int earnedPoints,
-  }) {
+  Widget _buildBookingCard(Booking booking) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -109,7 +161,7 @@ class BookingPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with hotel badge and status
+          // Header with room name and booking status
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -121,9 +173,9 @@ class BookingPage extends StatelessWidget {
                     color: primaryColor,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
-                    'Type',
-                    style: TextStyle(
+                  child: Text(
+                    booking.room?.roomName ?? 'Unknown Room',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -132,7 +184,7 @@ class BookingPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  hotelName,
+                  booking.room?.roomDescription ?? '',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -149,29 +201,26 @@ class BookingPage extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Hotel image placeholder
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.hotel,
-                    color: Colors.grey,
-                    size: 30,
+                // Room image placeholder
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: booking.room != null
+                        ? _buildRoomImage(booking)
+                        : _buildPlaceholderImage(),
                   ),
                 ),
                 const SizedBox(width: 12),
 
-                // Hotel details
+                // Room details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        roomType,
+                        booking.room?.roomDescription ?? 'Room Type',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -181,7 +230,7 @@ class BookingPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$nights malam',
+                        '${booking.room?.total_guest ?? 0} guest',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -196,7 +245,14 @@ class BookingPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      finalPrice,
+                      'Total',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 11,
+                      ),
+                    ),
+                    Text(
+                      _formatCurrency(booking.total_price ?? 0),
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,
@@ -211,14 +267,14 @@ class BookingPage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Total and points
+          // Total summary
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total 1 kamar: $totalPrice',
+                  '${_formatCurrency(booking.room?.roomPrice ?? 0)} / Night',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -227,7 +283,8 @@ class BookingPage extends StatelessWidget {
               ],
             ),
           ),
-          // Action buttons
+
+          // Action button
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -236,7 +293,12 @@ class BookingPage extends StatelessWidget {
                 SizedBox(
                   width: 150,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      print("booooooooooooo ${booking.toJson()}");
+                      Get.offAllNamed(Routes.SUCCESS_BOOKING, arguments: {
+                        'bookingData': booking.toJson(),
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
                       shape: RoundedRectangleBorder(
@@ -258,5 +320,51 @@ class BookingPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildRoomImage(Booking booking) {
+    // print('=== BOOKING DEBUG ===');
+    final photo = booking.room?.photo;
+    // print('PHOTO BASE64: $photo');
+    // print('Photo length: ${photo?.length}');
+    // print('Photo is empty: ${photo?.isEmpty}');
+
+    if (photo != null && photo.isNotEmpty) {
+      print('Booking: Photo found, trying to decode');
+      try {
+        return Image.memory(
+          base64Decode(photo),
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Booking: Error decoding - $error');
+            return _buildPlaceholderImage();
+          },
+        );
+      } catch (e) {
+        print('Booking: Exception - $e');
+        return _buildPlaceholderImage();
+      }
+    }
+
+    print('Booking: No photo, showing placeholder');
+    return _buildPlaceholderImage();
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      color: Colors.grey[300],
+      child: const Icon(
+        Icons.hotel,
+        color: Colors.grey,
+        size: 30,
+      ),
+    );
+  }
+
+  String _formatCurrency(num amount) {
+    final formatter =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    return formatter.format(amount);
   }
 }

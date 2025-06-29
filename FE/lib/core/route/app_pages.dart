@@ -1,5 +1,6 @@
 import 'package:fe/presentation/pages/home/home_page.dart';
 import 'package:fe/presentation/pages/register/register_page.dart';
+import 'package:fe/presentation/pages/room/success_booking/success_booking.dart';
 import 'package:fe/presentation/pages/room/room_page.dart';
 import 'package:fe/presentation/pages/room/detail/detail_room.dart';
 import 'package:get/get.dart';
@@ -34,5 +35,6 @@ class AppPages {
       transition: Transition.downToUp,
       transitionDuration: Duration(milliseconds: 500),
     ),
+    GetPage(name: '/success-booking', page: () => SuccessBooking())
   ];
 }

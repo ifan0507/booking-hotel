@@ -38,7 +38,8 @@ class RoomService extends Api {
       request.fields['roomName'] = room.roomName.toString();
       request.fields['roomDescription'] = room.roomDescription.toString();
       request.fields['roomPrice'] = room.roomPrice.toString();
-      request.fields['isBooked'] = room.isBooked.toString();
+      request.fields['total_guest'] = room.total_guest.toString();
+      request.fields['booked'] = room.booked.toString();
       request.fields['ac'] = room.ac.toString();
       request.fields['tv'] = room.tv.toString();
       request.fields['miniBar'] = room.miniBar.toString();
@@ -89,7 +90,7 @@ class RoomService extends Api {
     // print('[DEBUG] roomType: ${room.roomType}');
     // print('[DEBUG] roomName: ${room.roomName}');
     // print('[DEBUG] roomDescription: ${room.roomDescription}');
-    // print('[DEBUG] roomPrice: ${room.roomPrice}');
+    // print('[DEBUG] roomPrice: ${room.total_guest}');
     // print('[DEBUG] isBooked: ${room.isBooked}');
     // print('[DEBUG] ac: ${room.ac}');
     // print('[DEBUG] tv: ${room.tv}');
@@ -109,7 +110,8 @@ class RoomService extends Api {
       request.fields['roomName'] = room.roomName.toString();
       request.fields['roomDescription'] = room.roomDescription.toString();
       request.fields['roomPrice'] = room.roomPrice.toString();
-      request.fields['isBooked'] = room.isBooked.toString();
+      request.fields['total_guest'] = room.total_guest.toString();
+      request.fields['booked'] = room.booked.toString();
       request.fields['ac'] = room.ac.toString();
       request.fields['tv'] = room.tv.toString();
       request.fields['miniBar'] = room.miniBar.toString();

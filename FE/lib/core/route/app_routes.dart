@@ -5,4 +5,5 @@ abstract class Routes {
   static const HOME = '/home';
   static const ROOMS = '/rooms';
   static const DETAILROOM = '/detail-rooms';
+  static const SUCCESS_BOOKING = '/success-booking';
 }

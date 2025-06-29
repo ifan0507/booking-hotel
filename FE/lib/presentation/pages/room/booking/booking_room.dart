@@ -1,57 +1,26 @@
+import 'package:fe/presentation/pages/room/booking/booking_room_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/data/models/room.dart';
-import 'package:fe/data/models/booking.dart';
-
-class BookingRoom {
-  static void show(BuildContext context, Room room) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      enableDrag: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BookingModal(room: room),
-    );
-  }
-}
+import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // Import model Booking yang sudah ada
 
 class BookingModal extends StatefulWidget {
-  final Room room;
-
-  const BookingModal({Key? key, required this.room}) : super(key: key);
+  const BookingModal({super.key});
 
   @override
   State<BookingModal> createState() => _BookingModalState();
 }
 
 class _BookingModalState extends State<BookingModal> {
+  final BookingRoomController _bookingRoomController =
+      Get.put(BookingRoomController());
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _adultsController = TextEditingController(text: '1');
-  final _childrenController = TextEditingController(text: '0');
-  final _checkInController = TextEditingController();
-  final _checkOutController = TextEditingController();
-  final _specialRequestController = TextEditingController();
-
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _adultsController.dispose();
-    _childrenController.dispose();
-    _checkInController.dispose();
-    _checkOutController.dispose();
-    _specialRequestController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final formatCurrency =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final priceFormatted =
+        formatCurrency.format(_bookingRoomController.roomPrice ?? 0);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -96,7 +65,7 @@ class _BookingModalState extends State<BookingModal> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Book ${widget.room.roomName}',
+                      'Book ${_bookingRoomController.roomName}',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -127,14 +96,14 @@ class _BookingModalState extends State<BookingModal> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.room.roomName ?? '',
+                              _bookingRoomController.roomName ?? '',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
                               ),
                             ),
                             Text(
-                              '\$${widget.room.roomPrice}/night',
+                              '$priceFormatted/night',
                               style: TextStyle(
                                 color: Color(0xFF1a237e),
                                 fontWeight: FontWeight.w500,
@@ -150,32 +119,32 @@ class _BookingModalState extends State<BookingModal> {
                 // Guest Information Section
                 _buildSectionTitle('Guest Information'),
                 _buildTextField(
-                  controller: _fullNameController,
-                  label: 'Full Name',
-                  icon: Icons.person_outline,
-                  validator: (value) => value?.isEmpty == true
-                      ? 'Please enter your full name'
-                      : null,
-                  textInputAction: TextInputAction.next,
-                ),
+                    controller: _bookingRoomController.fullNameController,
+                    label: 'Full Name',
+                    icon: Icons.person_outline,
+                    validator: (value) => value?.isEmpty == true
+                        ? 'Please enter your full name'
+                        : null,
+                    textInputAction: TextInputAction.next,
+                    readOnly: true),
                 _buildTextField(
-                  controller: _emailController,
-                  label: 'Email Address',
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value?.isEmpty == true)
-                      return 'Please enter your email';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value!)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                  textInputAction: TextInputAction.next,
-                ),
+                    controller: _bookingRoomController.emailController,
+                    label: 'Email Address',
+                    icon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value?.isEmpty == true)
+                        return 'Please enter your email';
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                          .hasMatch(value!)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                    textInputAction: TextInputAction.next,
+                    readOnly: true),
                 _buildTextField(
-                  controller: _phoneController,
+                  controller: _bookingRoomController.phoneController,
                   label: 'Phone Number',
                   icon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
@@ -189,50 +158,13 @@ class _BookingModalState extends State<BookingModal> {
 
                 // Booking Details Section
                 _buildSectionTitle('Booking Details'),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _adultsController,
-                        label: 'Adults',
-                        icon: Icons.person,
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value?.isEmpty == true) return 'Required';
-                          if (int.tryParse(value!) == null ||
-                              int.parse(value) < 1) {
-                            return 'Min 1 adult';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _childrenController,
-                        label: 'Children',
-                        icon: Icons.child_care,
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value?.isEmpty == true) return 'Required';
-                          if (int.tryParse(value!) == null ||
-                              int.parse(value) < 0) {
-                            return 'Min 0';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
 
                 Row(
                   children: [
                     Expanded(
                       child: _buildDateField(
                         context: context,
-                        controller: _checkInController,
+                        controller: _bookingRoomController.checkInController,
                         label: 'Check-in',
                         icon: Icons.login,
                         isCheckIn: true,
@@ -242,7 +174,7 @@ class _BookingModalState extends State<BookingModal> {
                     Expanded(
                       child: _buildDateField(
                         context: context,
-                        controller: _checkOutController,
+                        controller: _bookingRoomController.checkOutController,
                         label: 'Check-out',
                         icon: Icons.logout,
                         isCheckIn: false,
@@ -279,8 +211,9 @@ class _BookingModalState extends State<BookingModal> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed:
-                            _isLoading ? null : () => Navigator.pop(context),
+                        onPressed: _bookingRoomController.isLoading.value
+                            ? null
+                            : () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(color: Colors.grey[400]!),
@@ -302,7 +235,9 @@ class _BookingModalState extends State<BookingModal> {
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : () => _handleBooking(),
+                        onPressed: _bookingRoomController.isLoading.value
+                            ? null
+                            : () => handleBooking(),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: Color(0xFF1a237e),
@@ -312,7 +247,7 @@ class _BookingModalState extends State<BookingModal> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: _isLoading
+                        child: _bookingRoomController.isLoading.value
                             ? SizedBox(
                                 height: 20,
                                 width: 20,
@@ -341,65 +276,6 @@ class _BookingModalState extends State<BookingModal> {
         ),
       ),
     );
-  }
-
-  Future<void> _handleBooking() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-
-      try {
-        // Create booking data menggunakan model Booking yang sudah ada
-        final booking = Booking(
-          room: widget.room,
-          guest_fullName: _fullNameController.text,
-          guest_email: _emailController.text,
-          adults: int.parse(_adultsController.text),
-          children: int.parse(_childrenController.text),
-          total_guest: int.parse(_adultsController.text) +
-              int.parse(_childrenController.text),
-          check_in: _checkInController.text,
-          check_out: _checkOutController.text,
-          // confirmation_Code akan di-generate di backend
-        );
-
-        // Simulate booking process
-        await Future.delayed(Duration(seconds: 2));
-
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Booking confirmed successfully!'),
-            backgroundColor: Color(0xFF1a237e),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-
-        Navigator.pop(context);
-
-        // Here you can:
-        // 1. Send booking data to your backend API
-        // 2. Navigate to booking confirmation page
-        // 3. Save to local database
-        // Example:
-        // final result = await BookingService.createBooking(booking);
-        // if (result.success) {
-        //   Navigator.pushNamed(context, '/booking-confirmation',
-        //     arguments: result.booking);
-        // }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Booking failed. Please try again.'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
-    }
   }
 
   Widget _buildSectionTitle(String title) {
@@ -504,10 +380,15 @@ class _BookingModalState extends State<BookingModal> {
         );
 
         if (picked != null) {
-          controller.text =
-              "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+          controller.text = DateFormat('yyyy-MM-dd').format(picked);
         }
       },
     );
+  }
+
+  Future<void> handleBooking() async {
+    if (_formKey.currentState!.validate()) {
+      _bookingRoomController.addBooking();
+    }
   }
 }

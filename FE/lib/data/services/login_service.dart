@@ -69,6 +69,16 @@ class LoginService extends Api {
     }
   }
 
+  Future<String> getEmail() async {
+    try {
+      final box = GetStorage();
+      final userEmail = box.read("user_email");
+      return userEmail ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   Future<String> getUserDisplayText() async {
     try {
       bool loggedIn = await isLoggedIn();
@@ -95,8 +105,13 @@ class LoginService extends Api {
 
   Future<bool> isAdmin() async {
     try {
-      final roles = await getUserRoles();
-      return roles.contains('ROLE_ADMIN');
+      bool loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        final roles = await getUserRoles();
+        return roles.contains('ROLE_ADMIN');
+      } else {
+        return false;
+      }
     } catch (e) {
       return false;
     }
@@ -104,8 +119,13 @@ class LoginService extends Api {
 
   Future<bool> isUser() async {
     try {
-      final roles = await getUserRoles();
-      return roles.contains('ROLE_USER');
+      bool loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        final roles = await getUserRoles();
+        return roles.contains('ROLE_USER');
+      } else {
+        return false;
+      }
     } catch (e) {
       return false;
     }

@@ -18,6 +18,7 @@ class EditRoomControlller extends GetxController {
   late TextEditingController roomNameController;
   late TextEditingController roomDescriptionController;
   late TextEditingController roomPriceController;
+  late TextEditingController totalGuestController;
 
   final isFullScreen = false.obs;
   final isLoading = false.obs;
@@ -39,6 +40,8 @@ class EditRoomControlller extends GetxController {
         TextEditingController(text: room.roomDescription);
     roomPriceController =
         TextEditingController(text: room.roomPrice.toString());
+    totalGuestController =
+        TextEditingController(text: room.total_guest.toString());
     photoFile = room.photoFile;
     roomId = room.id;
     ac.value = room.ac ?? false;
@@ -55,6 +58,7 @@ class EditRoomControlller extends GetxController {
     roomNameController.clear();
     roomDescriptionController.clear();
     roomPriceController.clear();
+    totalGuestController.clear();
 
     photoFile = null;
 
@@ -76,7 +80,8 @@ class EditRoomControlller extends GetxController {
         roomName: roomNameController.text.trim(),
         roomDescription: roomDescriptionController.text.trim(),
         roomPrice: double.tryParse(roomPriceController.text) ?? 0.0,
-        isBooked: false,
+        total_guest: int.tryParse(totalGuestController.text) ?? 0,
+        booked: false,
         photoFile: photoFile,
         ac: ac.value,
         tv: tv.value,

@@ -441,6 +441,17 @@ class _EditRoomState extends State<EditRoom> {
 
                         // Room Price
                         _buildTextField(
+                          controller: _editRoomControlller.totalGuestController,
+                          label: 'Total Guest',
+                          hint: 'Contoh: 4',
+                          icon: Icons.people,
+                          keyboardType: TextInputType.number,
+                        ),
+
+                        SizedBox(height: 20),
+
+                        // Room Price
+                        _buildTextField(
                           controller: _editRoomControlller.roomPriceController,
                           label: 'Room Price',
                           hint: 'Contoh: 500000',

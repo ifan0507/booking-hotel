@@ -18,6 +18,7 @@ class AddRoomController extends GetxController {
   final roomNameController = TextEditingController();
   final roomDescriptionController = TextEditingController();
   final roomPriceController = TextEditingController();
+  final totalGuestController = TextEditingController();
 
   final isFullScreen = false.obs;
   final isLoading = false.obs;
@@ -36,6 +37,7 @@ class AddRoomController extends GetxController {
   bool isRoomDescriptionValid() =>
       roomDescriptionController.text.trim().isNotEmpty;
   bool isRoomPriceValid() => roomPriceController.text.trim().isNotEmpty;
+  bool isTotalGuestValid() => totalGuestController.text.trim().isNotEmpty;
 
   @override
   void onInit() {
@@ -43,6 +45,7 @@ class AddRoomController extends GetxController {
     roomNameController.addListener(validateForm);
     roomDescriptionController.addListener(validateForm);
     roomPriceController.addListener(validateForm);
+    totalGuestController.addListener(validateForm);
     super.onInit();
   }
 
@@ -50,7 +53,8 @@ class AddRoomController extends GetxController {
     isFormValid.value = isRoomTypeValid() &&
         isRoomNameValid() &&
         isRoomDescriptionValid() &&
-        isRoomPriceValid();
+        isRoomPriceValid() &&
+        isTotalGuestValid();
   }
 
   @override
@@ -60,6 +64,7 @@ class AddRoomController extends GetxController {
     roomNameController.dispose();
     roomDescriptionController.dispose();
     roomPriceController.dispose();
+    totalGuestController.dispose();
     super.dispose();
   }
 
@@ -70,7 +75,8 @@ class AddRoomController extends GetxController {
         roomName: roomNameController.text.trim(),
         roomDescription: roomDescriptionController.text.trim(),
         roomPrice: double.tryParse(roomPriceController.text) ?? 0.0,
-        isBooked: false,
+        total_guest: int.tryParse(totalGuestController.text) ?? 0,
+        booked: false,
         photoFile: photoFile,
         ac: ac.value,
         tv: tv.value,
@@ -101,6 +107,7 @@ class AddRoomController extends GetxController {
     roomNameController.clear();
     roomDescriptionController.clear();
     roomPriceController.clear();
+    totalGuestController.clear();
 
     photoFile = null;
 

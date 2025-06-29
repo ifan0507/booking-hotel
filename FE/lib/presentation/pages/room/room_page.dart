@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/data/models/room.dart';
-import 'package:fe/data/services/login_service.dart';
 import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room.dart';
 import 'package:fe/presentation/pages/room/edit/edit_room_controlller.dart';
@@ -488,13 +487,11 @@ class _RoomPageState extends State<RoomPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: (room.isBooked ?? false)
-                            ? Colors.red
-                            : Colors.green,
+                        color: room.booked == false ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        room.isBooked ?? false ? 'Booked' : 'Available',
+                        room.booked ?? false ? 'Booked' : 'Available',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -584,10 +581,9 @@ class _RoomPageState extends State<RoomPage> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: (room.isBooked ?? false)
+                      onPressed: (room.booked ?? false)
                           ? null
                           : () {
-                              // Tambahkan ini
                               Get.toNamed(Routes.DETAILROOM, arguments: room);
                             },
                       style: ElevatedButton.styleFrom(
@@ -603,7 +599,7 @@ class _RoomPageState extends State<RoomPage> {
                         elevation: 2,
                       ),
                       child: Text(
-                        (room.isBooked ?? false) ? 'Not Available' : 'Book Now',
+                        (room.booked ?? false) ? 'Not Available' : 'Book Now',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -646,35 +642,6 @@ class _RoomPageState extends State<RoomPage> {
         Icons.hotel,
         size: 32,
         color: Colors.grey,
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(IconData icon, String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 16,
-            color: Colors.grey[600],
-          ),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }

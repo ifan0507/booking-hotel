@@ -1,6 +1,7 @@
 package com.dailycodework.lakesidehotel.controller;
 
 import com.dailycodework.lakesidehotel.exception.InvalidBookingRequestException;
+import com.dailycodework.lakesidehotel.exception.PhotoRetrievalException;
 import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
@@ -9,12 +10,15 @@ import com.dailycodework.lakesidehotel.response.RoomResponse;
 import com.dailycodework.lakesidehotel.service.IBookingService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +49,8 @@ public class BookingController {
     public ResponseEntity<?> saveBooking(@PathVariable Long roomId,
             @RequestBody BookedRoom bookingRequest) {
         try {
-            String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
-            return ResponseEntity.ok(
-                    "Room booked successfully, Your booking confirmation code is :" + confirmationCode);
+            BookingResponse response = bookingService.saveBooking(roomId, bookingRequest);
+            return ResponseEntity.ok(response);
 
         } catch (InvalidBookingRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -83,17 +86,31 @@ public class BookingController {
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
         Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
+        byte[] photoBytes = null;
+        Blob photoBlob = theRoom.getPhoto();
+        if (photoBlob != null) {
+            try {
+                photoBytes = photoBlob.getBytes(1, (int) photoBlob.length());
+            } catch (SQLException e) {
+                throw new PhotoRetrievalException("Error retrieving photo");
+            }
+        }
         RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomType(),
                 theRoom.getRoomDescription(),
-                theRoom.getRoomPrice(), theRoom.isBooked(), theRoom.getRoomName(), theRoom.isAc(), theRoom.isTv(),
+                theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomName(),
+                theRoom.isAc(), theRoom.isTv(),
                 theRoom.isMiniBar(),
-                theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen());
+                theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen(), photoBytes);
         ;
         return new BookingResponse(
-                booking.getBookingId(), booking.getCheckInDate(),
-                booking.getCheckOutDate(), booking.getGuestFullName(),
-                booking.getGuestEmail(), booking.getNumOfAdults(),
-                booking.getNumOfChildren(), booking.getTotalNumOfGuest(),
-                booking.getBookingConfirmationCode(), room);
+                booking.getBookingId(),
+                booking.getBookingDate(),
+                booking.getCheckInDate(),
+                booking.getCheckOutDate(),
+                booking.getGuestFullName(),
+                booking.getGuestEmail(),
+                booking.getPhone_number(),
+                booking.getBookingConfirmationCode(),
+                booking.getTotal_price(), room);
     }
 }
