@@ -93,11 +93,24 @@ class LoginService extends Api {
     }
   }
 
+  // Future<List<String>> getUserRoles() async {
+  //   try {
+  //     final box = GetStorage();
+  //     final roles = box.read("user_roles");
+  //     return roles ?? [];
+  //   } catch (e) {
+  //     return [];
+  //   }
+  // }
+
   Future<List<String>> getUserRoles() async {
     try {
       final box = GetStorage();
       final roles = box.read("user_roles");
-      return roles ?? [];
+      if (roles is List) {
+        return List<String>.from(roles);
+      }
+      return [];
     } catch (e) {
       return [];
     }
@@ -106,8 +119,11 @@ class LoginService extends Api {
   Future<bool> isAdmin() async {
     try {
       final roles = await getUserRoles();
-      return roles.contains('ROLE_ADMIN');
+      print("Debug Roles: ${roles.toString()}");
+      print("Debug Roles Type: ${roles.runtimeType}");
+      return roles.contains('ROLE_ADMIN') || roles.contains('admin');
     } catch (e) {
+      print("Error in isAdmin: $e");
       return false;
     }
   }

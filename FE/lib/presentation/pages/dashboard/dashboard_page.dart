@@ -1,10 +1,13 @@
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/room.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'dart:convert';
+
+import 'package:http/http.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -16,6 +19,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardController _dashboardController =
       Get.put(DashboardController());
+  final HomeController _homeController = Get.put(HomeController());
 
   int getBookedRoomsCount() {
     return _dashboardController.rooms
@@ -32,6 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    _homeController.loadUserStatus();
     // _dashboardController.loadRooms();
   }
 
