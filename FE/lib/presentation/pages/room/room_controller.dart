@@ -12,20 +12,26 @@ class RoomController extends GetxController {
   var rooms = <Room>[].obs;
 
   var isLoading = false.obs;
+  var roomType = ''.obs;
   var errorMessage = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadRooms();
+    ever(roomType, (_) => loadRooms());
+    roomType.value = 'All';
   }
 
   Future<void> loadRooms() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-
-      List<Room> roomList = await _roomService.getAllRoom();
+      List<Room> roomList = [];
+      if (roomType.value == 'All') {
+        roomList = await _roomService.getAllRoom();
+      } else {
+        roomList = await _roomService.getRoomByType(roomType.value);
+      }
       rooms.value = roomList;
     } catch (e) {
       errorMessage.value = 'Failed to load rooms: $e';

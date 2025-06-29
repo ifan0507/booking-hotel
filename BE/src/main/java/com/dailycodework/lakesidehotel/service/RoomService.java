@@ -125,4 +125,9 @@ public class RoomService implements IRoomService {
     public List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType) {
         return roomRepository.findAvailableRoomsByDatesAndType(checkInDate, checkOutDate, roomType);
     }
+
+    @Override
+    public List<Room> getByRoomType(String roomType) {
+        return roomRepository.findByRoomType(roomType);
+    }
 }

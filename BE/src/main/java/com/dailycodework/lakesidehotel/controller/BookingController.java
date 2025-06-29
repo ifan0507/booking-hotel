@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * @author Simpson Alfred
@@ -38,6 +43,15 @@ public class BookingController {
             bookingResponses.add(bookingResponse);
         }
         return ResponseEntity.ok(bookingResponses);
+    }
+
+    @PutMapping("check-out/{roomId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, String>> checkOutBooking(@PathVariable Long roomId) {
+
+        Map<String, String> response = bookingService.checkOutBooking(roomId);
+        return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("/room/{roomId}/booking")

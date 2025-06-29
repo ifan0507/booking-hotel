@@ -208,13 +208,14 @@ class _DetailRoomState extends State<DetailRoomScreen> {
                               Row(
                                 children: [
                                   Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
+                                    Icons.people,
+                                    color: Colors.grey,
                                     size: isTablet ? 24 : 20,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '4.5 (355 Reviews)',
+                                    _detailRoomController.room.total_guest
+                                        .toString(),
                                     style: TextStyle(
                                       fontSize: isTablet ? 18 : 16,
                                       color: Colors.grey[600],

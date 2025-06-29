@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'dart:convert';
 
-import 'package:http/http.dart';
-
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -93,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                'Kelola hotel Anda dengan mudah',
+                                'Manage your hotel easily',
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.8),
                                   fontSize: 14,
@@ -121,19 +119,19 @@ class _DashboardPageState extends State<DashboardPage> {
                             children: [
                               Expanded(
                                 child: _buildStatCard(
-                                    'Total Kamar',
+                                    'Total Rooms',
                                     '${_dashboardController.rooms.length}',
                                     Icons.hotel),
                               ),
                               SizedBox(width: 15),
                               Expanded(
-                                child: _buildStatCard('Terisi',
+                                child: _buildStatCard('Booked',
                                     '${getBookedRoomsCount()}', Icons.people),
                               ),
                               SizedBox(width: 15),
                               Expanded(
                                 child: _buildStatCard(
-                                    'Tersedia',
+                                    'Available',
                                     '${getNoBookedRoomsCount()}',
                                     Icons.check_circle),
                               ),

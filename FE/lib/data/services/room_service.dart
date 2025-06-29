@@ -26,6 +26,28 @@ class RoomService extends Api {
     }
   }
 
+  Future<List<Room>> getRoomByType(String roomType) async {
+    try {
+      final response = await http.get(
+          Uri.parse('$baseUrl/rooms/types/$roomType'),
+          headers: {'Content-Type': 'application/json'});
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+
+        List<Room> rooms =
+            jsonData.map((roomJson) => Room.fromJson(roomJson)).toList();
+
+        return rooms;
+      } else {
+        throw Exception(
+            'Failed to load rooms by type $roomType. Status code : ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fatching rooms by type $roomType');
+    }
+  }
+
   Future<String?> createRoom(Room room) async {
     try {
       final request = http.MultipartRequest(
