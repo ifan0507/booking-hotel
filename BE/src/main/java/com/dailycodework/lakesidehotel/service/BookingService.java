@@ -5,12 +5,16 @@ import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
 import com.dailycodework.lakesidehotel.repository.BookingRepository;
+import com.dailycodework.lakesidehotel.repository.RoomRepository;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Simpson Alfred
@@ -20,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingService implements IBookingService {
     private final BookingRepository bookingRepository;
+    private final RoomRepository roomRepository;
     private final IRoomService roomService;
 
     @Override
@@ -40,6 +45,18 @@ public class BookingService implements IBookingService {
     @Override
     public List<BookedRoom> getAllBookingsByRoomId(Long roomId) {
         return bookingRepository.findByRoomId(roomId);
+    }
+
+    @Override
+    public Map<String, String> checkOutBooking(Long roomId) {
+        Room room = roomService.getRoomById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
+        room.setBooked(false);
+        roomRepository.save(room);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Room has been successfully checked out.");
+        return response;
+
     }
 
     @Override

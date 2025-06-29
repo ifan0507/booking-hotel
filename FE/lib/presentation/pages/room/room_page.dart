@@ -22,7 +22,6 @@ class _RoomPageState extends State<RoomPage> {
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
 
-  String selectedCategory = 'All';
   final List<String> categories = [
     'All',
     'Deluxe',
@@ -45,7 +44,8 @@ class _RoomPageState extends State<RoomPage> {
   @override
   void initState() {
     super.initState();
-    // _roomController.loadRooms();
+    _roomController.roomType.value = 'All';
+    _roomController.loadRooms();
   }
 
   @override
@@ -86,7 +86,7 @@ class _RoomPageState extends State<RoomPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Kelola kamar hotel dengan mudah',
+                              'Manage your hotel easily',
                               style: TextStyle(
                                 color: whiteColor.withOpacity(0.8),
                                 fontSize: 16,
@@ -122,12 +122,13 @@ class _RoomPageState extends State<RoomPage> {
                               itemCount: categories.length,
                               itemBuilder: (context, index) {
                                 final category = categories[index];
-                                final isSelected = selectedCategory == category;
+                                final isSelected =
+                                    _roomController.roomType.value == category;
                                 return GestureDetector(
                                   onTap: () {
-                                    // setState(() {
-                                    //   selectedCategory = category;
-                                    // });
+                                    setState(() {
+                                      _roomController.roomType.value = category;
+                                    });
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.only(right: 12),

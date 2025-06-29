@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 class HomeController extends GetxController {
   final LoginService _loginService = LoginService();
 
-  final isLoggedIn = false.obs;
-  final isAdmin = false.obs;
-  final isUser = false.obs;
+  var isLoggedIn = false.obs;
+  var isAdmin = false.obs;
+  var isUser = false.obs;
 
   @override
   void onInit() {
@@ -15,20 +15,21 @@ class HomeController extends GetxController {
   }
 
   void loadUserStatus() async {
-    isLoggedIn.value = await _loginService.isLoggedIn();
-    isAdmin.value = await _loginService.isAdmin();
-    isUser.value = await _loginService.isUser();
-  }
+    bool logged = await _loginService.isLoggedIn();
+    isLoggedIn.value = logged;
 
-  Future<bool> checkLoginStatus() async {
-    return isLoggedIn.value = await _loginService.isLoggedIn();
-  }
+    if (logged) {
+      bool adminStatus = await _loginService.isAdmin();
+      bool userStatus = await _loginService.isUser();
 
-  Future<bool> admin() async {
-    return isAdmin.value = await _loginService.isAdmin();
-  }
+      print("Admin Status: $adminStatus");
+      print("User Status: $userStatus");
 
-  Future<bool> user() async {
-    return isUser.value = await _loginService.isUser();
+      isAdmin.value = adminStatus;
+      isUser.value = userStatus;
+    } else {
+      isAdmin.value = false;
+      isUser.value = false;
+    }
   }
 }

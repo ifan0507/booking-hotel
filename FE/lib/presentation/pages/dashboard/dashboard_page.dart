@@ -1,4 +1,5 @@
 import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/room.dart';
@@ -16,6 +17,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardController _dashboardController =
       Get.put(DashboardController());
+  final HomeController _homeController = Get.put(HomeController());
 
   int getBookedRoomsCount() {
     return _dashboardController.rooms
@@ -32,6 +34,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    _homeController.loadUserStatus();
     // _dashboardController.loadRooms();
   }
 
@@ -88,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                'Kelola hotel Anda dengan mudah',
+                                'Manage your hotel easily',
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.8),
                                   fontSize: 14,
@@ -116,19 +119,19 @@ class _DashboardPageState extends State<DashboardPage> {
                             children: [
                               Expanded(
                                 child: _buildStatCard(
-                                    'Total Kamar',
+                                    'Total Rooms',
                                     '${_dashboardController.rooms.length}',
                                     Icons.hotel),
                               ),
                               SizedBox(width: 15),
                               Expanded(
-                                child: _buildStatCard('Terisi',
+                                child: _buildStatCard('Booked',
                                     '${getBookedRoomsCount()}', Icons.people),
                               ),
                               SizedBox(width: 15),
                               Expanded(
                                 child: _buildStatCard(
-                                    'Tersedia',
+                                    'Available',
                                     '${getNoBookedRoomsCount()}',
                                     Icons.check_circle),
                               ),

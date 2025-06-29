@@ -30,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _homeController.loadUserStatus();
     _pages = [
       DashboardPage(),
       RoomPage(),

@@ -71,9 +71,20 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/room/types")
-    public List<String> getRoomTypes() {
-        return roomService.getAllRoomTypes();
+    @GetMapping("/types/{roomType}")
+    public ResponseEntity<List<RoomResponse>> getRoomByTypes(@PathVariable String roomType) throws SQLException {
+        List<Room> rooms = roomService.getByRoomType(roomType);
+        List<RoomResponse> roomResponses = new ArrayList<>();
+        for (Room room : rooms) {
+            byte[] photoBytes = roomService.getRoomPhotoByRoomId(room.getId());
+            if (photoBytes != null && photoBytes.length > 0) {
+                String base64Photo = Base64.encodeBase64String(photoBytes);
+                RoomResponse roomResponse = getRoomResponse(room);
+                roomResponse.setPhoto(base64Photo);
+                roomResponses.add(roomResponse);
+            }
+        }
+        return ResponseEntity.ok(roomResponses);
     }
 
     @GetMapping("/all-rooms")
@@ -121,6 +132,11 @@ public class RoomController {
             RoomResponse roomResponse = getRoomResponse(room);
             return ResponseEntity.ok(Optional.of(roomResponse));
         }).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+    }
+
+    @GetMapping("/room/types")
+    public List<String> getRoomTypes() {
+        return roomService.getAllRoomTypes();
     }
 
     @GetMapping("/available-rooms")

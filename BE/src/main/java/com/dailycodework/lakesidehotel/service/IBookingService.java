@@ -4,6 +4,7 @@ import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Simpson Alfred
@@ -11,6 +12,8 @@ import java.util.List;
 
 public interface IBookingService {
     void cancelBooking(Long bookingId);
+
+    Map<String, String> checkOutBooking(Long roomId);
 
     List<BookedRoom> getAllBookingsByRoomId(Long roomId);
 
