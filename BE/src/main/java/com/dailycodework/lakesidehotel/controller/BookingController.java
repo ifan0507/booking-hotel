@@ -109,9 +109,9 @@ public class BookingController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomType(),
-                theRoom.getRoomDescription(),
-                theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomName(),
+        RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomName(),
+                theRoom.getRoomType(),
+                theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomDescription(),
                 theRoom.isAc(), theRoom.isTv(),
                 theRoom.isMiniBar(),
                 theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen(), photoBytes);
