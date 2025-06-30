@@ -1,7 +1,6 @@
 import 'package:fe/presentation/pages/booking/booking_controller.dart';
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/presentation/pages/home/home_controller.dart';
-import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/booking.dart';
@@ -19,7 +18,6 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final BookingController _bookingController = Get.put(BookingController());
-  final RoomController _roomController = Get.put(RoomController());
   final HomeController _homeController = Get.put(HomeController());
 
   final Color primaryColor = const Color(0xFF1a237e);
@@ -203,42 +201,43 @@ class _BookingPageState extends State<BookingPage> {
                 const SizedBox(width: 8),
                 // Three dots menu button
 
-                if (_homeController.isLoggedIn.value &&
-                    _homeController.isAdmin.value &&
-                    booking.room?.booked == true)
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.grey[600],
-                      size: 18,
-                    ),
-                    iconSize: 18,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (BuildContext context) => [
-                      PopupMenuItem<String>(
-                        value: 'checkout',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.logout,
-                              size: 16,
-                              color: Colors.grey[700],
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Check Out',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
+                if (booking.status_cancel == false)
+                  if (_homeController.isLoggedIn.value &&
+                      _homeController.isAdmin.value &&
+                      booking.status_done == false)
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.grey[600],
+                        size: 18,
                       ),
-                    ],
-                    onSelected: (String value) {
-                      if (value == 'checkout') {
-                        _showCheckoutDialog(context, booking);
-                      }
-                    },
-                  ),
+                      iconSize: 18,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem<String>(
+                          value: 'checkout',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.logout,
+                                size: 16,
+                                color: Colors.grey[700],
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Check Out',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onSelected: (String value) {
+                        if (value == 'checkout') {
+                          _showCheckoutDialog(context, booking);
+                        }
+                      },
+                    ),
               ],
             ),
           ),
@@ -492,7 +491,7 @@ class _BookingPageState extends State<BookingPage> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _roomController.checkOutBooking(booking.room?.id);
+                _bookingController.checkOutBooking(booking.id);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,

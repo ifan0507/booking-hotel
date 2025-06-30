@@ -64,36 +64,6 @@ class RoomController extends GetxController {
     await loadRooms();
   }
 
-  Future<void> checkOutBooking(int roomId) async {
-    try {
-      isLoading.value = true;
-
-      final response = await _bookingService.checkOutBooking(roomId);
-
-      if (response == null) {
-        await loadRooms();
-        await _dashboardController.loadRooms();
-        Get.snackbar(
-          'Success',
-          'Room checkout successful',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to checkout room: ${e.toString()}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   void deleteRoom(int id) async {
     final response = await _roomService.deleteRoom(id);
 
