@@ -26,19 +26,19 @@ class _BookingPageState extends State<BookingPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: whiteColor,
+        backgroundColor: Color(0xFF1a237e),
         elevation: 0,
         title: const Text(
           'History Booking',
           style: TextStyle(
-            color: Colors.black,
+            color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: primaryColor),
+            icon: Icon(Icons.search, color: Colors.white),
             onPressed: () {},
           ),
         ],
@@ -294,9 +294,8 @@ class _BookingPageState extends State<BookingPage> {
                   width: 150,
                   child: ElevatedButton(
                     onPressed: () {
-                      print("booooooooooooo ${booking.toJson()}");
                       Get.offAllNamed(Routes.SUCCESS_BOOKING, arguments: {
-                        'bookingData': booking.toJson(),
+                        'booking': booking.jsonSuccessBooking(),
                       });
                     },
                     style: ElevatedButton.styleFrom(

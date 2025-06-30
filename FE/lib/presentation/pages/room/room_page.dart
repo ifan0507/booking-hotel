@@ -45,7 +45,7 @@ class _RoomPageState extends State<RoomPage> {
   void initState() {
     super.initState();
     _roomController.roomType.value = 'All';
-    _roomController.loadRooms();
+    // _roomController.loadRooms();
   }
 
   @override
