@@ -35,11 +35,15 @@ public class BookingResponse {
 
     private BigDecimal total_price;
 
+    private boolean status_cancel = false;
+
+    private boolean status_done = false;
+
     private RoomResponse room;
 
     public BookingResponse(Long id, LocalDate bookingDate, LocalDate checkInDate, LocalDate checkOutDate,
             String bookingConfirmationCode, String guestFullName, String guestEmail, BigInteger phone_number,
-            BigDecimal total_price) {
+            BigDecimal total_price, boolean status_cancel, boolean status_done) {
         this.id = id;
         this.bookingDate = bookingDate;
         this.checkInDate = checkInDate;
@@ -49,5 +53,7 @@ public class BookingResponse {
         this.guestEmail = guestEmail;
         this.phone_number = phone_number;
         this.total_price = total_price;
+        this.status_cancel = status_cancel;
+        this.status_done = status_done;
     }
 }

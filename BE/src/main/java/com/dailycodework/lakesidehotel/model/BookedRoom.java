@@ -47,6 +47,12 @@ public class BookedRoom {
     @Column(name = "total_price")
     private BigDecimal total_price;
 
+    @Column(name = "status_cansel")
+    private boolean status_cancel = false;
+
+    @Column(name = "status_done")
+    private boolean status_done = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;

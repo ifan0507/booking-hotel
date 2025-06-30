@@ -11,7 +11,7 @@ import java.util.Map;
  */
 
 public interface IBookingService {
-    void cancelBooking(Long bookingId);
+    Map<String, String> cancelBooking(Long bookingId);
 
     Map<String, String> checkOutBooking(Long roomId);
 
