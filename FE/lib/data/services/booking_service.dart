@@ -91,4 +91,29 @@ class BookingService extends Api {
       return null;
     }
   }
+
+  Future<String?> cancelBooking(int bookingId) async {
+    print(bookingId);
+    final headers = {
+      ...getToken(),
+      "Content-Type": "application/json",
+    };
+    try {
+      final request = await http.delete(
+          Uri.parse('$baseUrl/bookings/booking/$bookingId/delete'),
+          headers: headers);
+
+      if (request.statusCode == 200 ||
+          request.statusCode == 201 ||
+          request.statusCode == 204) {
+        return null;
+      } else {
+        print('[ERROR] Response: ${request.body}');
+        return '${request.body}';
+      }
+    } catch (e) {
+      print('[EXCEPTION] Error Cancel Booking: $e');
+      return '$e';
+    }
+  }
 }

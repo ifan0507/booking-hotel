@@ -1,6 +1,7 @@
 import 'package:fe/data/models/booking.dart';
 import 'package:fe/data/services/booking_service.dart';
 import 'package:fe/data/services/login_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BookingController extends GetxController {
@@ -49,6 +50,19 @@ class BookingController extends GetxController {
       isLoading.value = false;
       errorMessage.value = 'Error loading booking history: $e';
       print('Error in loadBookingHistory: $e');
+    }
+  }
+
+  void cancelBooking(int bookingId) async {
+    final response = await _bookingService.cancelBooking(bookingId);
+
+    if (response == null) {
+      Get.snackbar("Success", "cancel room successfully",
+          backgroundColor: Colors.green, colorText: Colors.white);
+      await loadBookingHistory();
+    } else {
+      Get.snackbar("Error", ' $response',
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 

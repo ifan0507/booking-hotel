@@ -290,8 +290,57 @@ class _BookingPageState extends State<BookingPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                // Ganti bagian button cancel ini:
                 SizedBox(
-                  width: 150,
+                  width: 160,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Confirm Cancel Booking'),
+                          content: const Text(
+                              'Are you sure you want to cancel this booking?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('No'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                if (booking.id != null) {
+                                  _bookingController.cancelBooking(booking.id!);
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text('Yes, Cancel',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.grey),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    child: const Text(
+                      'Batalkan',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 160,
                   child: ElevatedButton(
                     onPressed: () {
                       Get.offAllNamed(Routes.SUCCESS_BOOKING, arguments: {
@@ -305,7 +354,7 @@ class _BookingPageState extends State<BookingPage> {
                       ),
                     ),
                     child: const Text(
-                      'Detail',
+                      'Lihat Detail',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
