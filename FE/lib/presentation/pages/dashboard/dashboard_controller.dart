@@ -21,9 +21,9 @@ class DashboardController extends GetxController {
   Future<void> loadUserDisplayText() async {
     try {
       final displayText = await _loginService.getUserDisplayText();
-      userDisplayText.value = displayText;
+      userDisplayText.value = '$displayText 👋';
     } catch (e) {
-      userDisplayText.value = "Halo Guest";
+      userDisplayText.value = 'Halo Guest 👋';
     }
   }
 
