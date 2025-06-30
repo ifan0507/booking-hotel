@@ -6,7 +6,15 @@ class SuccessBookingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    bookingData = Get.arguments as Map<String, dynamic>;
+    final args = Get.arguments;
+    if (args is Map<String, dynamic> && args.containsKey('booking')) {
+      bookingData = args['booking'];
+    } else if (args is Map<String, dynamic>) {
+      bookingData = args;
+    } else {
+      bookingData = {};
+    }
+    print("BOOOOOOOOOOOOOOOOOOOOOOOO $bookingData");
   }
 
   Map<String, dynamic> get room => bookingData['room'] ?? {};

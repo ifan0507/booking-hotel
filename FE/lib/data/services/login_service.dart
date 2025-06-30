@@ -118,10 +118,20 @@ class LoginService extends Api {
 
   Future<bool> isAdmin() async {
     try {
+<<<<<<< HEAD
       final roles = await getUserRoles();
       print("Debug Roles: ${roles.toString()}");
       print("Debug Roles Type: ${roles.runtimeType}");
       return roles.contains('ROLE_ADMIN') || roles.contains('admin');
+=======
+      bool loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        final roles = await getUserRoles();
+        return roles.contains('ROLE_ADMIN') || roles.contains('ADMIN');
+      } else {
+        return false;
+      }
+>>>>>>> 79addd6392e7a3c49406e7443248cf7be8e235d1
     } catch (e) {
       print("Error in isAdmin: $e");
       return false;

@@ -39,6 +39,21 @@ class Booking {
     };
   }
 
+  Map<String, dynamic> jsonSuccessBooking() {
+    return {
+      'id': id,
+      'bookingDate': bookingDate,
+      'checkInDate': checkInDate,
+      'checkOutDate': checkOutDate,
+      'guestEmail': guestEmail,
+      'guestFullName': guestFullName,
+      'phone_number': phone_number,
+      'bookingConfirmationCode': bookingConfirmationCode,
+      'total_price': total_price,
+      'room': room?.toJson()
+    };
+  }
+
   factory Booking.fromJson(Map<String, dynamic> jsonData) {
     return Booking(
         id: jsonData['id'] ?? "",
