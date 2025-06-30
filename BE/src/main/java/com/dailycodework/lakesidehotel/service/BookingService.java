@@ -38,8 +38,18 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public void cancelBooking(Long bookingId) {
-        bookingRepository.deleteById(bookingId);
+    public Map<String, String> cancelBooking(Long bookingId) {
+        BookedRoom booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        Room room = roomService.getRoomById(booking.getRoom().getId())
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+        room.setBooked(false);
+        booking.setStatus_cancel(true);
+        roomRepository.save(room);
+        bookingRepository.save(booking);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Booking has been successfully cancel");
+        return response;
     }
 
     @Override
@@ -48,15 +58,18 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public Map<String, String> checkOutBooking(Long roomId) {
-        Room room = roomService.getRoomById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
+    public Map<String, String> checkOutBooking(Long bookingId) {
+        BookedRoom booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        Room room = roomService.getRoomById(booking.getRoom().getId())
+                .orElseThrow(() -> new RuntimeException("Room not found"));
         room.setBooked(false);
+        booking.setStatus_done(true);
         roomRepository.save(room);
-
+        bookingRepository.save(booking);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Room has been successfully checked out.");
         return response;
-
     }
 
     @Override
@@ -83,6 +96,8 @@ public class BookingService implements IBookingService {
                 bookingRequest.getPhone_number(),
                 bookingRequest.getBookingConfirmationCode(),
                 bookingRequest.getTotal_price(),
+                bookingRequest.isStatus_cancel(),
+                bookingRequest.isStatus_done(),
                 new RoomResponse(room.getId(), room.getRoomCode(), room.getRoomName(), room.getRoomType(),
                         room.getRoomPrice(), room.getTotal_guest(), room.isBooked(), room.getRoomDescription(),
                         room.isAc(), room.isTv(),

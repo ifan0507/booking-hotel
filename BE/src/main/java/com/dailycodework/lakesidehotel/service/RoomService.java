@@ -98,7 +98,6 @@ public class RoomService implements IRoomService {
         room.setRoomDescription(roomRequest.getRoomDescription());
         room.setRoomPrice(roomRequest.getRoomPrice());
         room.setTotal_guest(roomRequest.getTotal_guest());
-        room.setBooked(roomRequest.isBooked());
         room.setAc(roomRequest.isAc());
         room.setTv(roomRequest.isTv());
         room.setMiniBar(roomRequest.isMiniBar());

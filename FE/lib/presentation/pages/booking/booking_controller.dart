@@ -11,7 +11,6 @@ class BookingController extends GetxController {
   var bookings = <Booking>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
-  var userEmail = ''.obs;
 
   @override
   void onInit() {
@@ -24,9 +23,8 @@ class BookingController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Get user email from storage
       final email = await _loginService.getEmail();
-      userEmail.value = email;
+      final isAdmin = await _loginService.isAdmin();
 
       if (email.isEmpty) {
         errorMessage.value = 'User email not found. Please login again.';
@@ -34,13 +32,16 @@ class BookingController extends GetxController {
         return;
       }
 
-      // Get booking history from API
-      List<Booking>? bookingList =
-          await _bookingService.getBookingHistory(email);
+      List<Booking>? bookingList = [];
+
+      if (isAdmin) {
+        bookingList = await _bookingService.getAllBookingHistory();
+      } else {
+        bookingList = await _bookingService.getBookingHistory(email);
+      }
 
       if (bookingList != null) {
         bookings.value = bookingList;
-        print('Loaded ${bookings.length} bookings');
       } else {
         errorMessage.value = 'Failed to load booking history';
       }

@@ -42,7 +42,7 @@ class BookingService extends Api {
     }
   }
 
-  Future<Map<String, dynamic>> checkOutBooking(int roomId) async {
+  Future<String?> checkOutBooking(int roomId) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/bookings/check-out/$roomId'),
@@ -53,8 +53,7 @@ class BookingService extends Api {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = jsonDecode(response.body);
-        return jsonData;
+        return null;
       } else {
         throw Exception(
             'Failed to checkout room. Status code: ${response.statusCode}');
@@ -98,9 +97,10 @@ class BookingService extends Api {
       ...getToken(),
       "Content-Type": "application/json",
     };
+
     try {
-      final request = await http.delete(
-          Uri.parse('$baseUrl/bookings/booking/$bookingId/delete'),
+      final request = await http.put(
+          Uri.parse('$baseUrl/bookings/booking/$bookingId/update'),
           headers: headers);
 
       if (request.statusCode == 200 ||
@@ -114,6 +114,32 @@ class BookingService extends Api {
     } catch (e) {
       print('[EXCEPTION] Error Cancel Booking: $e');
       return '$e';
+    }
+  }
+
+  Future<List<Booking>?> getAllBookingHistory() async {
+    final url = Uri.parse('$baseUrl/bookings/all-bookings');
+
+    final headers = {
+      ...getToken(),
+      "Content-Type": "application/json",
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        List<Booking> bookings =
+            data.map((json) => Booking.fromJson(json)).toList();
+        print('History bookings loaded: ${bookings.length}');
+        return bookings;
+      } else {
+        print('Failed to load booking history: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception occurred while loading history: $e');
+      return null;
     }
   }
 }

@@ -50,7 +50,7 @@ public class BookingController {
         return ResponseEntity.ok(bookingResponses);
     }
 
-    @PutMapping("check-out/{roomId}")
+    @PutMapping("/check-out/{roomId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Map<String, String>> checkOutBooking(@PathVariable Long roomId) {
 
@@ -93,7 +93,7 @@ public class BookingController {
         return ResponseEntity.ok(bookingResponses);
     }
 
-    @DeleteMapping("/booking/{bookingId}/delete")
+    @PutMapping("/booking/{bookingId}/cancel")
     public void cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelBooking(bookingId);
     }
@@ -109,9 +109,9 @@ public class BookingController {
                 throw new PhotoRetrievalException("Error retrieving photo");
             }
         }
-        RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomType(),
-                theRoom.getRoomDescription(),
-                theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomName(),
+        RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomCode(), theRoom.getRoomName(),
+                theRoom.getRoomType(),
+                theRoom.getRoomPrice(), theRoom.getTotal_guest(), theRoom.isBooked(), theRoom.getRoomDescription(),
                 theRoom.isAc(), theRoom.isTv(),
                 theRoom.isMiniBar(),
                 theRoom.isJacuzzi(), theRoom.isBalcony(), theRoom.isKitchen(), photoBytes);
@@ -125,6 +125,6 @@ public class BookingController {
                 booking.getGuestEmail(),
                 booking.getPhone_number(),
                 booking.getBookingConfirmationCode(),
-                booking.getTotal_price(), room);
+                booking.getTotal_price(), booking.isStatus_cancel(), booking.isStatus_done(), room);
     }
 }

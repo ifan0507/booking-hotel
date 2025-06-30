@@ -378,8 +378,7 @@ class _RoomPageState extends State<RoomPage> {
                     child: PopupMenuButton<String>(
                       onSelected: (String value) {
                         if (value == 'edit') {
-                        } else if (value == 'delete') {
-                        } else if (value == 'checkout') {}
+                        } else if (value == 'delete') {}
                       },
                       icon: Icon(Icons.more_vert, color: Colors.white),
                       itemBuilder: (BuildContext context) =>
@@ -397,54 +396,6 @@ class _RoomPageState extends State<RoomPage> {
                             _showEditRoomModal(room);
                           },
                         ),
-                        if (room.booked == true)
-                          PopupMenuItem<String>(
-                            value: 'checkout',
-                            child: Row(
-                              children: [
-                                Icon(Icons.logout, color: Colors.orange),
-                                SizedBox(width: 10),
-                                Text('Check Out'),
-                              ],
-                            ),
-                            onTap: () {
-                              Future.delayed(Duration.zero, () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text('Confirm Check Out'),
-                                    content: Text(
-                                      'Are you sure you want to check out this room?\n\n'
-                                      'Room: ${room.roomName ?? room.roomType}\n'
-                                      'Code: ${room.roomCode}',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                        child: Text('Cancel'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          if (room.id != null) {
-                                            _roomController
-                                                .checkOutBooking(room.id!);
-                                          }
-                                        },
-                                        child: Text('Check Out',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.orange,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              });
-                            },
-                          ),
                         PopupMenuItem<String>(
                           value: 'delete',
                           child: Row(

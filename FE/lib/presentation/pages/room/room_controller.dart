@@ -70,16 +70,17 @@ class RoomController extends GetxController {
 
       final response = await _bookingService.checkOutBooking(roomId);
 
-      // Refresh room list setelah checkout
-      await loadRooms();
-
-      Get.snackbar(
-        'Success',
-        'Room checkout successful',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
+      if (response == null) {
+        await loadRooms();
+        await _dashboardController.loadRooms();
+        Get.snackbar(
+          'Success',
+          'Room checkout successful',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
     } catch (e) {
       Get.snackbar(
         'Error',

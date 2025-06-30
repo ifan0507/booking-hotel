@@ -1,5 +1,7 @@
 import 'package:fe/presentation/pages/booking/booking_controller.dart';
 import 'package:fe/core/route/app_routes.dart';
+import 'package:fe/presentation/pages/home/home_controller.dart';
+import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/booking.dart';
@@ -17,6 +19,8 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final BookingController _bookingController = Get.put(BookingController());
+  final RoomController _roomController = Get.put(RoomController());
+  final HomeController _homeController = Get.put(HomeController());
 
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
@@ -112,7 +116,7 @@ class _BookingPageState extends State<BookingPage> {
                       Icon(
                         Icons.history,
                         size: 64,
-                        color: Colors.grey[400],
+                        color: Color(0xFF1a237e),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -127,6 +131,11 @@ class _BookingPageState extends State<BookingPage> {
                       Text(
                         'You haven\'t made any bookings yet',
                         style: TextStyle(color: Colors.grey[500]),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _bookingController.refreshBookings(),
+                        child: const Text('Try Again'),
                       ),
                     ],
                   ),
@@ -210,7 +219,7 @@ class _BookingPageState extends State<BookingPage> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    booking.room?.roomName ?? 'Unknown Room',
+                    booking.room?.roomType ?? 'Unknown Room',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -220,17 +229,55 @@ class _BookingPageState extends State<BookingPage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  booking.room?.roomDescription ?? '',
+                  booking.bookingConfirmationCode ?? '',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Spacer(),
+                const SizedBox(width: 8),
+                // Three dots menu button
+
+                if (_homeController.isLoggedIn.value &&
+                    _homeController.isAdmin.value &&
+                    booking.room?.booked == true)
+                  PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Colors.grey[600],
+                      size: 18,
+                    ),
+                    iconSize: 18,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem<String>(
+                        value: 'checkout',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.logout,
+                              size: 16,
+                              color: Colors.grey[700],
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Check Out',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    onSelected: (String value) {
+                      if (value == 'checkout') {
+                        _showCheckoutDialog(context, booking);
+                      }
+                    },
+                  ),
               ],
             ),
           ),
-
           // Hotel info and pricing
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -256,7 +303,7 @@ class _BookingPageState extends State<BookingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        booking.room?.roomDescription ?? 'Room Type',
+                        booking.room?.roomName ?? 'Room Name',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -465,5 +512,105 @@ class _BookingPageState extends State<BookingPage> {
 
     // Hanya bisa cancel jika tanggal sekarang masih sebelum check-in
     return now.isBefore(checkinDate);
+  }
+
+  void _showCheckoutDialog(BuildContext context, dynamic booking) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                Icons.logout,
+                color: primaryColor,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Check Out',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to check out from this booking?',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Booking: ${booking.bookingConfirmationCode ?? ''}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      'Room: ${booking.room?.roomName ?? ''}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _roomController.checkOutBooking(booking.room?.id);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              child: const Text(
+                'Check Out',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

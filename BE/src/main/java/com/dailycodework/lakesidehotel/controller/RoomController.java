@@ -169,7 +169,8 @@ public class RoomController {
                 .map(booking -> new BookingResponse(booking.getBookingId(), booking.getBookingDate(),
                         booking.getCheckInDate(),
                         booking.getCheckOutDate(), booking.getBookingConfirmationCode(), booking.getGuestFullName(),
-                        booking.getGuestEmail(), booking.getPhone_number(), booking.getTotal_price()))
+                        booking.getGuestEmail(), booking.getPhone_number(), booking.getTotal_price(),
+                        booking.isStatus_cancel(), booking.isStatus_done()))
                 .toList();
         byte[] photoBytes = null;
         Blob photoBlob = room.getPhoto();
