@@ -146,34 +146,34 @@ class _BookingPageState extends State<BookingPage> {
               // Filter bookings berdasarkan tab yang dipilih
               final filteredBookings = _getFilteredBookings();
 
-              // if (filteredBookings.isEmpty) {
-              //   return Center(
-              //     child: Column(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         Icon(
-              //           Icons.history,
-              //           size: 64,
-              //           color: Colors.grey[400],
-              //         ),
-              //         const SizedBox(height: 16),
-              //         Text(
-              //           'No $_selectedTab',
-              //           style: TextStyle(
-              //             fontSize: 20,
-              //             fontWeight: FontWeight.bold,
-              //             color: Colors.grey[600],
-              //           ),
-              //         ),
-              //         const SizedBox(height: 8),
-              //         Text(
-              //           _getEmptyStateMessage(),
-              //           style: TextStyle(color: Colors.grey[500]),
-              //         ),
-              //       ],
-              //     ),
-              //   );
-              // }
+              if (filteredBookings.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.history,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No $_selectedTab',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _getEmptyStateMessage(),
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
               return RefreshIndicator(
                 onRefresh: () => _bookingController.refreshBookings(),
@@ -197,25 +197,45 @@ class _BookingPageState extends State<BookingPage> {
     );
   }
 
+  String _getEmptyStateMessage() {
+    switch (_selectedTab) {
+      case 'Currently Booked':
+        return 'You don\'t have any active bookings';
+      case 'Cancelled':
+        return 'You don\'t have any cancelled bookings';
+      case 'Completed':
+        return 'You don\'t have any completed bookings';
+      default:
+        return 'No bookings found';
+    }
+  }
+
   Widget _buildTab(String title, bool isActive) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isActive ? primaryColor : Colors.transparent,
-              width: 2,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedTab = title;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? primaryColor : Colors.transparent,
+                width: 2,
+              ),
             ),
           ),
-        ),
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: isActive ? primaryColor : Colors.grey[600],
-            fontSize: 14,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isActive ? primaryColor : Colors.grey[600],
+              fontSize: 14,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
           ),
         ),
       ),
