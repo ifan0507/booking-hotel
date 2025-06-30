@@ -1,12 +1,17 @@
 import 'package:fe/data/models/booking.dart';
 import 'package:fe/data/services/booking_service.dart';
 import 'package:fe/data/services/login_service.dart';
+import 'package:fe/presentation/pages/dashboard/dashboard_controller.dart';
+import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BookingController extends GetxController {
   final BookingService _bookingService = BookingService();
   final LoginService _loginService = LoginService();
+  final RoomController _roomController = Get.put(RoomController());
+  final DashboardController _dashboardController =
+      Get.put(DashboardController());
 
   var bookings = <Booking>[].obs;
   var isLoading = false.obs;
@@ -64,6 +69,37 @@ class BookingController extends GetxController {
     } else {
       Get.snackbar("Error", ' $response',
           backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+  Future<void> checkOutBooking(int bookingId) async {
+    try {
+      isLoading.value = true;
+
+      final response = await _bookingService.checkOutBooking(bookingId);
+
+      if (response == null) {
+        await loadBookingHistory();
+        await _roomController.loadRooms();
+        await _dashboardController.loadRooms();
+        Get.snackbar(
+          'Success',
+          'Room checkout successful',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to checkout room: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 

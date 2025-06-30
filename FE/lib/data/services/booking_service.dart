@@ -100,7 +100,7 @@ class BookingService extends Api {
 
     try {
       final request = await http.put(
-          Uri.parse('$baseUrl/bookings/booking/$bookingId/update'),
+          Uri.parse('$baseUrl/bookings/booking/$bookingId/cancel'),
           headers: headers);
 
       if (request.statusCode == 200 ||

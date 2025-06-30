@@ -94,8 +94,10 @@ public class BookingController {
     }
 
     @PutMapping("/booking/{bookingId}/cancel")
-    public void cancelBooking(@PathVariable Long bookingId) {
-        bookingService.cancelBooking(bookingId);
+    public ResponseEntity<Map<String, String>> cancelBooking(@PathVariable Long bookingId) {
+        Map<String, String> response = bookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok(response);
+
     }
 
     private BookingResponse getBookingResponse(BookedRoom booking) {

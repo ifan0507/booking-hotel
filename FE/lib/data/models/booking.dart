@@ -10,6 +10,8 @@ class Booking {
   final String? phone_number;
   final String? bookingConfirmationCode;
   final double? total_price;
+  final bool? status_cancel;
+  final bool? status_done;
   final Room? room;
 
   Booking(
@@ -22,6 +24,8 @@ class Booking {
       this.phone_number,
       this.bookingConfirmationCode,
       this.total_price,
+      this.status_cancel,
+      this.status_done,
       this.room});
 
   Map<String, dynamic> toJson() {
@@ -35,6 +39,8 @@ class Booking {
       'phone_number': phone_number,
       'bookingConfirmationCode': bookingConfirmationCode,
       'total_price': total_price,
+      'status_cancel': status_cancel,
+      'status_done': status_done,
       'room': room
     };
   }
@@ -50,6 +56,8 @@ class Booking {
       'phone_number': phone_number,
       'bookingConfirmationCode': bookingConfirmationCode,
       'total_price': total_price,
+      'status_cancel': status_cancel,
+      'status_done': status_done,
       'room': room?.toJson()
     };
   }
@@ -65,6 +73,8 @@ class Booking {
         phone_number: jsonData['phone_number']?.toString(),
         bookingConfirmationCode: jsonData['bookingConfirmationCode'] ?? "",
         total_price: jsonData['total_price'] ?? 0.0,
+        status_cancel: jsonData['status_cancel'] ?? false,
+        status_done: jsonData['status_done'] ?? false,
         room:
             jsonData['room'] != null ? Room.fromJson(jsonData['room']) : null);
   }

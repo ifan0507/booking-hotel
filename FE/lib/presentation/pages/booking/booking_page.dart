@@ -1,7 +1,6 @@
 import 'package:fe/presentation/pages/booking/booking_controller.dart';
 import 'package:fe/core/route/app_routes.dart';
 import 'package:fe/presentation/pages/home/home_controller.dart';
-import 'package:fe/presentation/pages/room/room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fe/data/models/booking.dart';
@@ -19,11 +18,12 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final BookingController _bookingController = Get.put(BookingController());
-  final RoomController _roomController = Get.put(RoomController());
   final HomeController _homeController = Get.put(HomeController());
 
   final Color primaryColor = const Color(0xFF1a237e);
   final Color whiteColor = Colors.white;
+
+  String _selectedTab = 'Currently Booked';
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +53,10 @@ class _BookingPageState extends State<BookingPage> {
             color: Colors.white,
             child: Row(
               children: [
-                _buildTab('Currently Booked', true),
-                _buildTab('Cancelled', false),
-                _buildTab('Completed', false),
+                _buildTab(
+                    'Currently Booked', _selectedTab == 'Currently Booked'),
+                _buildTab('Cancelled', _selectedTab == 'Cancelled'),
+                _buildTab('Completed', _selectedTab == 'Completed'),
               ],
             ),
           ),
@@ -142,15 +143,47 @@ class _BookingPageState extends State<BookingPage> {
                 );
               }
 
+              // Filter bookings berdasarkan tab yang dipilih
+              final filteredBookings = _getFilteredBookings();
+
+              // if (filteredBookings.isEmpty) {
+              //   return Center(
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Icon(
+              //           Icons.history,
+              //           size: 64,
+              //           color: Colors.grey[400],
+              //         ),
+              //         const SizedBox(height: 16),
+              //         Text(
+              //           'No $_selectedTab',
+              //           style: TextStyle(
+              //             fontSize: 20,
+              //             fontWeight: FontWeight.bold,
+              //             color: Colors.grey[600],
+              //           ),
+              //         ),
+              //         const SizedBox(height: 8),
+              //         Text(
+              //           _getEmptyStateMessage(),
+              //           style: TextStyle(color: Colors.grey[500]),
+              //         ),
+              //       ],
+              //     ),
+              //   );
+              // }
+
               return RefreshIndicator(
                 onRefresh: () => _bookingController.refreshBookings(),
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _bookingController.bookings.length,
+                  itemCount: filteredBookings.length,
                   itemBuilder: (context, index) {
                     return Column(
                       children: [
-                        _buildBookingCard(_bookingController.bookings[index]),
+                        _buildBookingCard(filteredBookings[index]),
                         const SizedBox(height: 12),
                       ],
                     );
@@ -239,42 +272,43 @@ class _BookingPageState extends State<BookingPage> {
                 const SizedBox(width: 8),
                 // Three dots menu button
 
-                if (_homeController.isLoggedIn.value &&
-                    _homeController.isAdmin.value &&
-                    booking.room?.booked == true)
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.grey[600],
-                      size: 18,
-                    ),
-                    iconSize: 18,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (BuildContext context) => [
-                      PopupMenuItem<String>(
-                        value: 'checkout',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.logout,
-                              size: 16,
-                              color: Colors.grey[700],
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Check Out',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
+                if (booking.status_cancel == false)
+                  if (_homeController.isLoggedIn.value &&
+                      _homeController.isAdmin.value &&
+                      booking.status_done == false)
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.grey[600],
+                        size: 18,
                       ),
-                    ],
-                    onSelected: (String value) {
-                      if (value == 'checkout') {
-                        _showCheckoutDialog(context, booking);
-                      }
-                    },
-                  ),
+                      iconSize: 18,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem<String>(
+                          value: 'checkout',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.logout,
+                                size: 16,
+                                color: Colors.grey[700],
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Check Out',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onSelected: (String value) {
+                        if (value == 'checkout') {
+                          _showCheckoutDialog(context, booking);
+                        }
+                      },
+                    ),
               ],
             ),
           ),
@@ -379,45 +413,51 @@ class _BookingPageState extends State<BookingPage> {
                     ? SizedBox(
                         width: 160,
                         child: OutlinedButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Confirm Cancel Booking'),
-                                content: const Text(
-                                    'Are you sure you want to cancel this booking?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: const Text('No'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      if (booking.id != null) {
-                                        _bookingController
-                                            .cancelBooking(booking.id!);
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
+                          onPressed: booking.status_cancel ?? false
+                              ? null
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title:
+                                          const Text('Confirm Cancel Booking'),
+                                      content: const Text(
+                                          'Are you sure you want to cancel this booking?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: const Text('No'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            if (booking.id != null) {
+                                              _bookingController
+                                                  .cancelBooking(booking.id!);
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                          ),
+                                          child: const Text('Yes, Cancel',
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                        ),
+                                      ],
                                     ),
-                                    child: const Text('Yes, Cancel',
-                                        style: TextStyle(color: Colors.white)),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  );
+                                },
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: Colors.grey),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
                           ),
-                          child: const Text(
-                            'Batalkan',
+                          child: Text(
+                            booking.status_cancel ?? false
+                                ? 'Cancelled'
+                                : 'Cancel',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 12,
@@ -592,7 +632,7 @@ class _BookingPageState extends State<BookingPage> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _roomController.checkOutBooking(booking.room?.id);
+                _bookingController.checkOutBooking(booking.id);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
@@ -612,5 +652,26 @@ class _BookingPageState extends State<BookingPage> {
         );
       },
     );
+  }
+
+  List<Booking> _getFilteredBookings() {
+    final allBookings = _bookingController.bookings;
+
+    switch (_selectedTab) {
+      case 'Currently Booked':
+        return allBookings.where((booking) {
+          return booking.status_cancel == false && booking.status_done == false;
+        }).toList();
+      case 'Cancelled':
+        return allBookings.where((booking) {
+          return booking.status_cancel == true;
+        }).toList();
+      case 'Completed':
+        return allBookings.where((booking) {
+          return booking.status_done == true;
+        }).toList();
+      default:
+        return allBookings;
+    }
   }
 }
