@@ -101,7 +101,7 @@ class _BookingPageState extends State<BookingPage> {
                       Icon(
                         Icons.history,
                         size: 64,
-                        color: Colors.grey[400],
+                        color: Color(0xFF1a237e),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -116,6 +116,11 @@ class _BookingPageState extends State<BookingPage> {
                       Text(
                         'You haven\'t made any bookings yet',
                         style: TextStyle(color: Colors.grey[500]),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _bookingController.refreshBookings(),
+                        child: const Text('Try Again'),
                       ),
                     ],
                   ),
